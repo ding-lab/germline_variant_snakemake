@@ -42,4 +42,4 @@ RUN export CLOUD_SDK_REPO="cloud-sdk-stretch" && \
 # Clone germlinewrapper script for pindel filtering
 USER wliang
 WORKDIR /home/
-RUN git clone https://github.com/ding-lab/germline_calling_snakemake.git
+RUN git clone https://github.com/ding-lab/germline_variant_snakemake.git
