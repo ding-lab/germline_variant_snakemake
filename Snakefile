@@ -101,7 +101,7 @@ rule varscan_merge_indel_vcf:
 rule pindel_call:
     input:
         ref = lambda wildcards: GS.remote(REF_DICT[wildcards.sample]),
-        samples = lambda wildcards: GS.remote(BAMPATH_DICT[wildcards.sample])
+        samples = lambda wildcards: GS.remote(BAMPATH_DICT[wildcards.sample]),
         filename = lambda wildcards: FILE_DICT[wildcards.sample]
     output: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw"
     params:
