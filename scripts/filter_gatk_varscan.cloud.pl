@@ -5,23 +5,23 @@
 
 use strict;
 use warnings;
-die unless @ARGV == 3;
+die unless @ARGV == 2;
 
 my ($run_dir,$sample_name,$passvalue)=@ARGV;
 print("$run_dir\n");
 print("$sample_name\n");
 print("$passvalue\n");
 
-my $pindel_vcf=$run_dir."/pindel/pindel.out.raw.CvgVafStrand_pass.Homopolymer_pass.vcf"; 
-my $gatk_vcf=$run_dir."/gatk/".$sample_name.".".$passvalue.".gatk.indel.vcf";
-my $vars_vcf=$run_dir."/varscan/".$sample_name.".".$passvalue.".varscan.raw.indel.vcf";
-my $gatk_vcf_filter=$run_dir."/gatk/".$sample_name.".".$passvalue.".gatk.indel.filtered.vcf";
-my $vars_vcf_filter=$run_dir."/varscan/".$sample_name.".".$passvalue.".varscan.indel.filtered.vcf";
+my $pindel_vcf=$run_dir."/".$sample_name."pindel.vcf"; 
+my $gatk_vcf=$run_dir."/".$sample_name.".gatk.indel.vcf";
+my $vars_vcf=$run_dir."/".$sample_name.".varscan.raw.indel.vcf";
+my $gatk_vcf_filter=$run_dir."/".$sample_name.".gatk.indel.filtered.vcf";
+my $vars_vcf_filter=$run_dir."/".$sample_name.".varscan.indel.filtered.vcf";
 
-my $gatk_snv_vcf=$run_dir."/gatk/".$sample_name.".".$passvalue.".gatk.snp.vcf";
-my $vars_snv_vcf=$run_dir."/varscan/".$sample_name.".".$passvalue.".varscan.raw.snp.vcf";
-my $gatk_snv_vcf_filter=$run_dir."/gatk/".$sample_name.".".$passvalue.".gatk.snp.filtered.vcf";
-my $vars_snv_vcf_filter=$run_dir."/varscan/".$sample_name.".".$passvalue.".varscan.snp.filtered.vcf";
+my $gatk_snv_vcf=$run_dir."/".$sample_name.".gatk.snp.vcf";
+my $vars_snv_vcf=$run_dir."/".$sample_name.".varscan.raw.snp.vcf";
+my $gatk_snv_vcf_filter=$run_dir."/".$sample_name.".gatk.snp.filtered.vcf";
+my $vars_snv_vcf_filter=$run_dir."/".$sample_name.".varscan.snp.filtered.vcf";
 
 my $vcf_cutoff=0.2; 
 my $min_coverage=10; 

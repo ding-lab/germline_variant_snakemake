@@ -40,6 +40,6 @@ RUN export CLOUD_SDK_REPO="cloud-sdk-stretch" && \
     gcloud config set component_manager/disable_update_check true
 
 # Clone germlinewrapper script for pindel filtering
-USER wliang
+USER root
 WORKDIR /home/
 RUN git clone https://github.com/ding-lab/germline_variant_snakemake.git
