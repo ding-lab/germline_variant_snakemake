@@ -7,7 +7,7 @@ from snakemake.remote.GS import RemoteProvider as GSRemoteProvider
 GS = GSRemoteProvider()
 
 BUCKET = "wliang/snakemake_germlinevariant/highpass/"
-INTERVALPREFIX = "/home/germline_calling_snakemake/files/interval_chr"
+INTERVALPREFIX = "/home/germline_variant_snakemake/files/interval_chr"
 CHR=[str(i) for i in range (1,23)]
 CHR.append("X")
 CHR.append("Y")
@@ -184,4 +184,3 @@ rule filter:
 #    singularity: "docker://broadinstitute/gatk3:3.8-0"
 #    shell: "java -Xms256m -Xmx512m -jar GenomeAnalysisTK.jar -T CombineVariants -R {input.genome_fa} -o {output} --variant:gsnp {input.gsnp} --variant:gindel {input.gindel} --variant:vsnp {input.vsnp} --variant:vindel {input.vindel} --variant:pindel {input.pindel} -genotypeMergeOptions PRIORITIZE -priority gsnp,vsnp,gindel,vindel,pindel"
     
-   
