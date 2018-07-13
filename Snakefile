@@ -108,7 +108,7 @@ rule pindel_call:
         extra="-x 4 -w 0.1 -B 0 -M 3 -J pindel-centromere-exclude.bed -c {ix}",
         chr="{ix}",
         sample="{sample}",
-        filename = lambda wildcards: FILE_DICT[wildcard.sample]
+        filename = lambda wildcards: FILE_DICT[wildcards.sample]
     threads: 4
     shell: "echo -e '/home/{params.filename}\t500\t{params.sample}' > {params.sample}.pindel_config.txt ;  pindel {params.extra} -T {threads} -f {input.ref} -i {params.sample}.pindel_config.txt -o {params.prefix} ; cat pindel/chr{params.chr}/{params.sample}.chr{params.chr}_D pindel/chr{params.chr}/{params.sample}.chr{params.chr}_INV pindel/chr{params.chr}/{params.sample}.chr{params.chr}_TD pindel/chr{params.chr}/{params.sample}.chr{params.chr}_SI | grep ChrID > {output}"
 
