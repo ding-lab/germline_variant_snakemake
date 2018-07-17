@@ -56,6 +56,16 @@ inputParameters:
   localCopy:
     path: input/
     disk: datadisk
+- name: bamfile
+  description: Cloud Storage path
+  localCopy:
+    path: input/
+    disk: datadisk
+- name: baifile
+  description: Cloud Storage path or pattern to input file(s)
+  localCopy:
+    path: input/
+    disk: datadisk
 - name: sample
   description: File names
 
