@@ -120,6 +120,7 @@ rule pindel_filter_config:
     params: 
         sample="{sample}",
         chr="{ix}",
+        ref_file = lambda wildcards: str(REF_DICT[wildcard.sample]).split("/")[2]
     run:
         for ix in CHR:
             filename={output}
@@ -127,9 +128,9 @@ rule pindel_filter_config:
             os.makedirs(os.path.dirname(filename), exist_ok=True)
             with open(filename, "w") as f:
                 f.write ( \
-f"pindel.filter.pindel2vcf = /diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/bin/pindel2vcf\n\
+f"pindel.filter.pindel2vcf = /opt/conda/bin/pindel2vcf\n\
 pindel.filter.variants_file = pindel/chr{params.chr}/{params.sample}.pindel.out.chr{params.chr}.raw\n\
-pindel.filter.REF = /diskmnt/Datasets/Reference/human_genome/GRCh37-lite/GRCh37-lite.fa\n\
+pindel.filter.REF = {params.ref_file}\n\
 pindel.filter.date = 000000\n\
 pindel.filter.heterozyg_min_var_allele_freq = 0.2\n\
 pindel.filter.homozyg_min_var_allele_freq = 0.8\n\
