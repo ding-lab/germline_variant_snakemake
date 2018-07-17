@@ -7,10 +7,7 @@ use strict;
 use warnings;
 die unless @ARGV == 2;
 
-my ($run_dir,$sample_name,$passvalue)=@ARGV;
-print("$run_dir\n");
-print("$sample_name\n");
-print("$passvalue\n");
+my ($run_dir,$sample_name)=@ARGV;
 
 my $pindel_vcf=$run_dir."/".$sample_name."pindel.vcf"; 
 my $gatk_vcf=$run_dir."/".$sample_name.".gatk.indel.vcf";
