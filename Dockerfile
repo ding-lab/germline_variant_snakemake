@@ -14,7 +14,7 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/log/dpkg.log
 
-RUN conda install -y python=3.6 pindel varscan gatk4 samtools snakemake pandas && \
+RUN conda install -y python=3.6 pindel varscan gatk4 samtools snakemake pandas bcftools && \
     conda uninstall -y snakemake && \
     conda clean -y --all
 
