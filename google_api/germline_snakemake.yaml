@@ -75,6 +75,10 @@ inputParameters:
     disk: datadisk
 - name: sample
   description: File names
+- name: fafile
+  description: File names
+- name: bamfile
+  description: File names
 
 # By specifying an outputParameter, we instruct the pipelines API to
 # copy /mnt/data/output/* to the Cloud Storage location specified in
