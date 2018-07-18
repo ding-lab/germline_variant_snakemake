@@ -35,6 +35,7 @@ docker:
     find /mnt/data/input &&
     touch /mnt/data/input/*.fai &&
     touch /mnt/data/input/*.dict &&
+    touch /mnt/data/input/*.bai &&
     cd /home/germline_variant_snakemake/google_api/ &&
     echo -e "sample\treference\tbampath" > sample.txt &&
     echo -e "${sample}\t${fafile}\t${bamfile}" | awk -F "\t" '{OFS="\t"; l1=split($2, b, "/"); l2=split($3, c, "/"); print $1, "/mnt/data/input/"b[l1], "/mnt/data/input/"c[l2]}' >> sample.txt &&
