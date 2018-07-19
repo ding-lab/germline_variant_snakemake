@@ -144,7 +144,7 @@ rule filter_pindel:
     output: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf"
     params: chr='{ix}',
             sample='{sample}'
-    shell: "perl /home/germline_variant_snakemake/scripts/pindel_filter.v0.5.pl pindel/chr{params.chr}/{params.sample}.pindel.input.chr{params.chr}.txt"
+    shell: "perl pindel_filter.v0.5.pl pindel/chr{params.chr}/{params.sample}.pindel.input.chr{params.chr}.txt"
 
 rule index_pindel:
     input: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf"
@@ -167,7 +167,7 @@ rule all_tools:
 rule filter:
     input: "{sample}.gatk.snp.vcf", "{sample}.gatk.indel.vcf", "{sample}.varscan.snp.vcf", "{sample}.varscan.indel.vcf"
     output: "{sample}.gatk.snp.filtered.vcf", "{sample}.gatk.indel.filtered.vcf", "{sample}.varscan.snp.filtered.vcf", "{sample}.varscan.indel.filtered.vcf"
-    shell: "perl /home/germline_variant_snakemake/scripts/filter_gatk_varscan.pl `pwd` {sample}"
+    shell: "perl filter_gatk_varscan.pl `pwd` {sample}"
 
 #rule merge_vcf:
 #    input: 
