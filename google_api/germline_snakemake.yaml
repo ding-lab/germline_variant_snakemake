@@ -3,8 +3,8 @@ description: Snakemake workflow to call germline variant by using GATK, VarScan,
 
 # Define the resources needed for this pipeline.
 resources:
-  minimumCpuCores: 96
-  minimumRamGb: 360
+  minimumCpuCores: 64
+  minimumRamGb: 240
   zones:
   - us-central1-a
   - us-central1-b
