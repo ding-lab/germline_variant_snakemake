@@ -109,7 +109,7 @@ rule pindel_call:
         sample="{sample}",
     log: "logs/{sample}.pindel.chr{ix}.log"
     threads: 4
-    shell: "pindel {params.extra} -T {threads} -f {input.ref} -i {params.sample}.pindel_config.txt -o {params.prefix} 2>{log}; cat pindel/chr{params.chr}/{params.sample}.chr{params.chr}_D pindel/chr{params.chr}/{params.sample}.chr{params.chr}_INV pindel/chr{params.chr}/{params.sample}.chr{params.chr}_TD pindel/chr{params.chr}/{params.sample}.chr{params.chr}_SI | grep ChrID > {output}"
+    shell: "pindel {params.extra} -T {threads} -f {input.ref} -i {params.sample}.pindel_config.txt -o {params.prefix} {log}; cat pindel/chr{params.chr}/{params.sample}.chr{params.chr}_D pindel/chr{params.chr}/{params.sample}.chr{params.chr}_INV pindel/chr{params.chr}/{params.sample}.chr{params.chr}_TD pindel/chr{params.chr}/{params.sample}.chr{params.chr}_SI | grep ChrID > {output}"
 
 #Generate the config file for pindel_filter.v0.5.pl
 
