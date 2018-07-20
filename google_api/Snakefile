@@ -17,7 +17,6 @@ SAMPLE = pd.read_table(config["samples"])["sample"].drop_duplicates().tolist()
 REF_DICT = pd.read_table(config["samples"])[["sample","reference"]].drop_duplicates().set_index("sample")["reference"].to_dict()
 FILE_DICT = pd.read_table(config["samples"])[["sample","bampath"]].drop_duplicates().set_index("sample")["bampath"].to_dict()
 
-print (SAMPLE, REF_DICT, FILE_DICT)
 
 ### Run GATK HaplotypeCaller and Select Variant
 rule gatk_haplotypecaller:
@@ -117,11 +116,11 @@ rule pindel_filter_config:
     params: 
         sample="{sample}",
         chr="{ix}",
-        ref_file = lambda wildcards: str(REF_DICT[wildcard.sample]).split("/")[2]
+        ref_file = lambda wildcards: str(REF_DICT[wildcards.sample]).split("/")[2]
     run:
         for ix in CHR:
-            filename={output}
-            os.makedirs(os.path.dirname(filename), exist_ok=True)
+            filename=f"pindel/chr{params.chr}/{params.sample}.pindel.input.chr{params.chr}.txt"
+            #os.makedirs(os.path.dirname(filename), exist_ok=True)
             with open(filename, "w") as f:
                 f.write ( \
 f"pindel.filter.pindel2vcf = /opt/conda/bin/pindel2vcf\n\
@@ -144,7 +143,7 @@ rule filter_pindel:
     output: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf"
     params: chr='{ix}',
             sample='{sample}'
-    shell: "perl pindel_filter.v0.5.pl pindel/chr{params.chr}/{params.sample}.pindel.input.chr{params.chr}.txt"
+    shell: "perl pindel_filter.v0.5.pl {input}"
 
 rule index_pindel:
     input: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf"
