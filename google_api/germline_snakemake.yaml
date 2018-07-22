@@ -42,8 +42,7 @@ docker:
     echo -e "${bamfile}\t500\t${sample}" | awk -F "\t" '{OFS="\t"; l1=split($1, b, "/"); print "/mnt/data/input/"b[l1], $2, $3}' > ${sample}.pindel_config.txt &&
     snakemake -j 96 -p all_tools &&
     cp ${sample}.*.filtered.vcf /mnt/data/output &&
-    cp ${sample}.pindel.vcf /mnt/data/output &&
-    cp -r log/* /mnt/data/output
+    cp ${sample}.pindel.vcf /mnt/data/output
 
 # The Pipelines API currently supports GCS paths, along with patterns (globs),
 # but it doesn't directly support a list of files being passed as a single input
