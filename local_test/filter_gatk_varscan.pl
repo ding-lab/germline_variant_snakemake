@@ -9,14 +9,14 @@ die unless @ARGV == 2;
 
 my ($run_dir,$sample_name)=@ARGV;
 
-my $pindel_vcf=$run_dir."/".$sample_name."pindel.vcf"; 
+my $pindel_vcf=$run_dir."/".$sample_name.".pindel.vcf"; 
 my $gatk_vcf=$run_dir."/".$sample_name.".gatk.indel.vcf";
-my $vars_vcf=$run_dir."/".$sample_name.".varscan.raw.indel.vcf";
+my $vars_vcf=$run_dir."/".$sample_name.".varscan.indel.vcf";
 my $gatk_vcf_filter=$run_dir."/".$sample_name.".gatk.indel.filtered.vcf";
 my $vars_vcf_filter=$run_dir."/".$sample_name.".varscan.indel.filtered.vcf";
 
 my $gatk_snv_vcf=$run_dir."/".$sample_name.".gatk.snp.vcf";
-my $vars_snv_vcf=$run_dir."/".$sample_name.".varscan.raw.snp.vcf";
+my $vars_snv_vcf=$run_dir."/".$sample_name.".varscan.snp.vcf";
 my $gatk_snv_vcf_filter=$run_dir."/".$sample_name.".gatk.snp.filtered.vcf";
 my $vars_snv_vcf_filter=$run_dir."/".$sample_name.".varscan.snp.filtered.vcf";
 
