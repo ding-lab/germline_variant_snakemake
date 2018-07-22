@@ -123,6 +123,7 @@ rule pindel_filter_config:
     run:
         for ix in CHR:
             filename=f"pindel/chr{params.chr}/{params.sample}.pindel.input.chr{params.chr}.txt"
+            #print(filename, {params.ref_file})
             #os.makedirs(os.path.dirname(filename), exist_ok=True)
             with open(filename, "w") as f:
                 f.write ( \
