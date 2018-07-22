@@ -1,0 +1,35 @@
+21:25:18.598 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/share/gatk4-4.0.5.2-0/gatk-package-4.0.5.2-local.jar!/com/intel/gkl/native/libgkl_compression.so
+21:25:18.615 WARN  NativeLibraryLoader - Unable to load libgkl_compression.so from native/libgkl_compression.so (/tmp/wliang/libgkl_compression1272429150955182529.so: /tmp/wliang/libgkl_compression1272429150955182529.so: failed to map segment from shared object: Operation not permitted)
+21:25:18.616 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/share/gatk4-4.0.5.2-0/gatk-package-4.0.5.2-local.jar!/com/intel/gkl/native/libgkl_compression.so
+21:25:18.621 WARN  NativeLibraryLoader - Unable to load libgkl_compression.so from native/libgkl_compression.so (/tmp/wliang/libgkl_compression5116965746006795846.so: /tmp/wliang/libgkl_compression5116965746006795846.so: failed to map segment from shared object: Operation not permitted)
+21:25:18.696 INFO  SelectVariants - ------------------------------------------------------------
+21:25:18.697 INFO  SelectVariants - The Genome Analysis Toolkit (GATK) v4.0.5.2
+21:25:18.697 INFO  SelectVariants - For support and documentation go to https://software.broadinstitute.org/gatk/
+21:25:18.697 INFO  SelectVariants - Executing as wliang@denali on Linux v3.10.0-693.11.1.el7.x86_64 amd64
+21:25:18.697 INFO  SelectVariants - Java runtime: OpenJDK 64-Bit Server VM v1.8.0_92-b15
+21:25:18.697 INFO  SelectVariants - Start Date/Time: July 21, 2018 9:25:18 PM CDT
+21:25:18.697 INFO  SelectVariants - ------------------------------------------------------------
+21:25:18.697 INFO  SelectVariants - ------------------------------------------------------------
+21:25:18.698 INFO  SelectVariants - HTSJDK Version: 2.16.0
+21:25:18.698 INFO  SelectVariants - Picard Version: 2.18.7
+21:25:18.698 INFO  SelectVariants - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+21:25:18.698 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+21:25:18.698 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+21:25:18.698 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+21:25:18.698 INFO  SelectVariants - Deflater: JdkDeflater
+21:25:18.698 INFO  SelectVariants - Inflater: JdkInflater
+21:25:18.698 INFO  SelectVariants - GCS max retries/reopens: 20
+21:25:18.698 INFO  SelectVariants - Using google-cloud-java patch 6d11bef1c81f885c26b2b56c8616b7a705171e4f from https://github.com/droazen/google-cloud-java/tree/dr_all_nio_fixes
+21:25:18.698 INFO  SelectVariants - Initializing engine
+21:25:19.163 INFO  FeatureManager - Using codec VCFCodec to read file file:///diskmnt/Projects/Users/wliang/Germline_Noncoding/08_Snakemake/local_test/TCGA-73-4677-11A-01D-1203-02.gatk.raw.chr1.vcf
+21:25:19.210 INFO  SelectVariants - Done initializing engine
+21:25:19.236 INFO  ProgressMeter - Starting traversal
+21:25:19.236 INFO  ProgressMeter -        Current Locus  Elapsed Minutes    Variants Processed  Variants/Minute
+21:25:22.785 INFO  ProgressMeter -          1:248512749              0.1                152252        2573998.3
+21:25:22.786 INFO  ProgressMeter - Traversal complete. Processed 152252 total variants in 0.1 minutes.
+21:25:22.868 INFO  SelectVariants - Shutting down engine
+[July 21, 2018 9:25:22 PM CDT] org.broadinstitute.hellbender.tools.walkers.variantutils.SelectVariants done. Elapsed time: 0.07 minutes.
+Runtime.totalMemory()=2501902336
+Using GATK jar /diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/share/gatk4-4.0.5.2-0/gatk-package-4.0.5.2-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -jar /diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/share/gatk4-4.0.5.2-0/gatk-package-4.0.5.2-local.jar SelectVariants -R /diskmnt/Datasets/Reference/human_genome/GRCh37-lite/GRCh37-lite.fa -V TCGA-73-4677-11A-01D-1203-02.gatk.raw.chr1.vcf -O TCGA-73-4677-11A-01D-1203-02.gatk.snp.chr1.vcf -select-type SNP -select-type MNP

@@ -166,7 +166,7 @@ rule all_tools:
         expand("{sample}.pindel.vcf", sample=SAMPLE)
 
 rule filter:
-    input: "{sample}.gatk.snp.vcf", "{sample}.gatk.indel.vcf", "{sample}.varscan.snp.vcf", "{sample}.varscan.indel.vcf"
+    input: "{sample}.gatk.snp.vcf", "{sample}.gatk.indel.vcf", "{sample}.varscan.snp.vcf", "{sample}.varscan.indel.vcf", "{sample}.pindel.vcf"
     output: "{sample}.gatk.snp.filtered.vcf", "{sample}.gatk.indel.filtered.vcf", "{sample}.varscan.snp.filtered.vcf", "{sample}.varscan.indel.filtered.vcf"
     params: sample = '{sample}'
     shell: "perl filter_gatk_varscan.pl `pwd` {params.sample}"

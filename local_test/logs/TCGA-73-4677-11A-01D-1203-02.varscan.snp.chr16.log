@@ -1,0 +1,12 @@
+Only SNPs will be reported
+Min coverage:	3
+Min reads2:	2
+Min var freq:	0.1
+Min avg qual:	15
+P-value thresh:	0.1
+Input stream not ready, waiting for 5 seconds...
+Reading input from STDIN
+72916374 bases in pileup file
+57282 variant positions (53846 SNP, 3436 indel)
+293 were failed by the strand-filter
+53559 variant positions reported (53559 SNP, 0 indel)

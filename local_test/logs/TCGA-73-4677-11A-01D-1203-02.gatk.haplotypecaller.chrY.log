@@ -1,0 +1,115 @@
+19:27:43.820 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/share/gatk4-4.0.5.2-0/gatk-package-4.0.5.2-local.jar!/com/intel/gkl/native/libgkl_compression.so
+19:27:43.838 WARN  NativeLibraryLoader - Unable to load libgkl_compression.so from native/libgkl_compression.so (/tmp/wliang/libgkl_compression3410431470798209543.so: /tmp/wliang/libgkl_compression3410431470798209543.so: failed to map segment from shared object: Operation not permitted)
+19:27:43.840 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/share/gatk4-4.0.5.2-0/gatk-package-4.0.5.2-local.jar!/com/intel/gkl/native/libgkl_compression.so
+19:27:43.845 WARN  NativeLibraryLoader - Unable to load libgkl_compression.so from native/libgkl_compression.so (/tmp/wliang/libgkl_compression3787789786054977713.so: /tmp/wliang/libgkl_compression3787789786054977713.so: failed to map segment from shared object: Operation not permitted)
+19:27:43.967 INFO  HaplotypeCaller - ------------------------------------------------------------
+19:27:43.967 INFO  HaplotypeCaller - The Genome Analysis Toolkit (GATK) v4.0.5.2
+19:27:43.967 INFO  HaplotypeCaller - For support and documentation go to https://software.broadinstitute.org/gatk/
+19:27:43.967 INFO  HaplotypeCaller - Executing as wliang@denali on Linux v3.10.0-693.11.1.el7.x86_64 amd64
+19:27:43.967 INFO  HaplotypeCaller - Java runtime: OpenJDK 64-Bit Server VM v1.8.0_92-b15
+19:27:43.967 INFO  HaplotypeCaller - Start Date/Time: July 21, 2018 7:27:43 PM CDT
+19:27:43.968 INFO  HaplotypeCaller - ------------------------------------------------------------
+19:27:43.968 INFO  HaplotypeCaller - ------------------------------------------------------------
+19:27:43.968 INFO  HaplotypeCaller - HTSJDK Version: 2.16.0
+19:27:43.968 INFO  HaplotypeCaller - Picard Version: 2.18.7
+19:27:43.968 INFO  HaplotypeCaller - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+19:27:43.968 INFO  HaplotypeCaller - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+19:27:43.969 INFO  HaplotypeCaller - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+19:27:43.969 INFO  HaplotypeCaller - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+19:27:43.969 INFO  HaplotypeCaller - Deflater: JdkDeflater
+19:27:43.969 INFO  HaplotypeCaller - Inflater: JdkInflater
+19:27:43.969 INFO  HaplotypeCaller - GCS max retries/reopens: 20
+19:27:43.969 INFO  HaplotypeCaller - Using google-cloud-java patch 6d11bef1c81f885c26b2b56c8616b7a705171e4f from https://github.com/droazen/google-cloud-java/tree/dr_all_nio_fixes
+19:27:43.969 INFO  HaplotypeCaller - Initializing engine
+19:27:44.254 WARN  IntelDeflaterFactory - IntelInflater is not supported, using Java.util.zip.Inflater
+19:27:44.259 WARN  IntelDeflaterFactory - IntelInflater is not supported, using Java.util.zip.Inflater
+19:27:45.150 INFO  IntervalArgumentCollection - Processing 59373566 bp from intervals
+19:27:45.162 INFO  HaplotypeCaller - Done initializing engine
+19:27:45.181 INFO  HaplotypeCallerEngine - Disabling physical phasing, which is supported only for reference-model confidence output
+19:27:45.199 INFO  NativeLibraryLoader - Loading libgkl_utils.so from jar:file:/diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/share/gatk4-4.0.5.2-0/gatk-package-4.0.5.2-local.jar!/com/intel/gkl/native/libgkl_utils.so
+19:27:45.201 WARN  NativeLibraryLoader - Unable to load libgkl_utils.so from native/libgkl_utils.so (/tmp/wliang/libgkl_utils4347280388604673979.so: /tmp/wliang/libgkl_utils4347280388604673979.so: failed to map segment from shared object: Operation not permitted)
+19:27:45.201 WARN  IntelPairHmm - Intel GKL Utils not loaded
+19:27:45.201 INFO  PairHMM - OpenMP multi-threaded AVX-accelerated native PairHMM implementation is not supported
+19:27:45.201 INFO  NativeLibraryLoader - Loading libgkl_utils.so from jar:file:/diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/share/gatk4-4.0.5.2-0/gatk-package-4.0.5.2-local.jar!/com/intel/gkl/native/libgkl_utils.so
+19:27:45.203 WARN  NativeLibraryLoader - Unable to load libgkl_utils.so from native/libgkl_utils.so (/tmp/wliang/libgkl_utils5647283952353689751.so: /tmp/wliang/libgkl_utils5647283952353689751.so: failed to map segment from shared object: Operation not permitted)
+19:27:45.204 WARN  IntelPairHmm - Intel GKL Utils not loaded
+19:27:45.204 WARN  PairHMM - ***WARNING: Machine does not have the AVX instruction set support needed for the accelerated AVX PairHmm. Falling back to the MUCH slower LOGLESS_CACHING implementation!
+19:27:45.274 INFO  ProgressMeter - Starting traversal
+19:27:45.274 INFO  ProgressMeter -        Current Locus  Elapsed Minutes     Regions Processed   Regions/Minute
+19:27:55.412 INFO  ProgressMeter -            Y:2679337              0.2                  9020          53388.6
+19:28:05.533 INFO  ProgressMeter -            Y:2818146              0.3                  9900          29321.7
+19:28:15.558 INFO  ProgressMeter -            Y:3275561              0.5                 12020          23829.5
+19:28:25.541 INFO  ProgressMeter -            Y:3791884              0.7                 14350          21382.8
+19:28:35.567 INFO  ProgressMeter -            Y:4604062              0.8                 18040          21522.3
+19:28:45.593 INFO  ProgressMeter -            Y:5687520              1.0                 22840          22719.6
+19:28:55.628 INFO  ProgressMeter -            Y:6730296              1.2                 27400          23367.9
+19:29:05.631 INFO  ProgressMeter -            Y:7076065              1.3                 29600          22101.6
+19:29:15.666 INFO  ProgressMeter -            Y:7415773              1.5                 31710          21048.6
+19:29:25.672 INFO  ProgressMeter -            Y:7962063              1.7                 34690          20731.7
+19:29:35.677 INFO  ProgressMeter -            Y:8451457              1.8                 37540          20401.8
+19:29:45.708 INFO  ProgressMeter -            Y:8858223              2.0                 40020          19938.1
+19:29:55.733 INFO  ProgressMeter -            Y:9887213              2.2                 44770          20590.5
+19:30:06.791 INFO  ProgressMeter -            Y:9938757              2.4                 45120          19130.0
+19:30:20.963 INFO  ProgressMeter -            Y:9944694              2.6                 45150          17400.2
+19:30:31.545 INFO  ProgressMeter -            Y:9958121              2.8                 45240          16325.3
+19:30:41.792 INFO  ProgressMeter -            Y:9982819              2.9                 45400          15431.9
+19:30:52.078 INFO  ProgressMeter -           Y:10016269              3.1                 45640          14659.3
+19:31:03.305 INFO  ProgressMeter -           Y:10038860              3.3                 45790          13873.7
+19:31:13.343 INFO  ProgressMeter -           Y:13223839              3.5                 56720          16356.2
+19:31:23.515 INFO  ProgressMeter -           Y:13432870              3.6                 58050          15959.6
+19:31:43.618 INFO  ProgressMeter -           Y:13450611              4.0                 58180          14646.1
+19:31:54.270 INFO  ProgressMeter -           Y:13452223              4.1                 58190          14022.0
+19:32:04.714 INFO  ProgressMeter -           Y:13466972              4.3                 58280          13478.4
+19:32:17.266 INFO  ProgressMeter -           Y:13479330              4.5                 58350          12871.7
+19:32:27.372 INFO  ProgressMeter -           Y:13489570              4.7                 58410          12423.4
+19:32:38.921 INFO  ProgressMeter -           Y:13688911              4.9                 59720          12202.4
+19:32:55.791 INFO  ProgressMeter -           Y:13695305              5.2                 59760          11547.2
+19:33:05.808 INFO  ProgressMeter -           Y:14101697              5.3                 62110          11626.3
+19:33:15.825 INFO  ProgressMeter -           Y:14596853              5.5                 65120          11820.3
+19:33:25.842 INFO  ProgressMeter -           Y:15139619              5.7                 68340          12039.9
+19:33:35.876 INFO  ProgressMeter -           Y:15733664              5.8                 71690          12268.6
+19:33:45.899 INFO  ProgressMeter -           Y:16334240              6.0                 74850          12453.4
+19:33:55.928 INFO  ProgressMeter -           Y:16929053              6.2                 78190          12657.1
+19:34:05.947 INFO  ProgressMeter -           Y:17478901              6.3                 81320          12817.3
+19:34:15.979 INFO  ProgressMeter -           Y:18091625              6.5                 84850          13030.3
+19:34:25.996 INFO  ProgressMeter -           Y:18927614              6.7                 89010          13327.5
+19:34:36.010 INFO  ProgressMeter -           Y:19534361              6.8                 92420          13500.7
+19:34:46.016 INFO  ProgressMeter -           Y:21425855              7.0                 99980          14257.7
+19:34:56.044 INFO  ProgressMeter -           Y:22042710              7.2                103470          14411.9
+19:35:06.045 INFO  ProgressMeter -           Y:22806189              7.3                107390          14618.5
+19:35:16.053 INFO  ProgressMeter -           Y:23398270              7.5                110740          14739.9
+19:35:26.053 INFO  ProgressMeter -           Y:24398375              7.7                115300          15013.8
+19:35:36.061 INFO  ProgressMeter -           Y:28773237              7.8                130990          16694.2
+19:35:58.904 INFO  ProgressMeter -           Y:28817945              8.2                131300          15959.4
+19:36:08.905 INFO  ProgressMeter -           Y:49146887              8.4                199070          23716.2
+19:36:21.627 INFO  ProgressMeter -           Y:58856975              8.6                231500          26900.3
+19:36:38.400 INFO  ProgressMeter -           Y:58977502              8.9                232000          26110.2
+19:36:49.038 INFO  ProgressMeter -           Y:58979369              9.1                232010          25600.5
+19:37:08.878 INFO  ProgressMeter -           Y:58982877              9.4                232030          24701.4
+19:37:20.959 INFO  ProgressMeter -           Y:58989622              9.6                232070          24187.2
+19:37:31.037 INFO  ProgressMeter -           Y:59000532              9.8                232150          23779.3
+19:37:42.761 INFO  ProgressMeter -           Y:59004069             10.0                232170          23314.7
+19:37:55.049 INFO  ProgressMeter -           Y:59016675             10.2                232270          22854.7
+19:38:07.095 INFO  ProgressMeter -           Y:59026425             10.4                232340          22418.7
+19:38:17.364 INFO  ProgressMeter -           Y:59034576             10.5                232390          22059.2
+19:38:17.729 INFO  HaplotypeCaller - 1088389 read(s) filtered by: ((((((((MappingQualityReadFilter AND MappingQualityAvailableReadFilter) AND MappedReadFilter) AND NotSecondaryAlignmentReadFilter) AND NotDuplicateReadFilter) AND PassesVendorQualityCheckReadFilter) AND NonZeroReferenceLengthAlignmentReadFilter) AND GoodCigarReadFilter) AND WellformedReadFilter)
+  1088389 read(s) filtered by: (((((((MappingQualityReadFilter AND MappingQualityAvailableReadFilter) AND MappedReadFilter) AND NotSecondaryAlignmentReadFilter) AND NotDuplicateReadFilter) AND PassesVendorQualityCheckReadFilter) AND NonZeroReferenceLengthAlignmentReadFilter) AND GoodCigarReadFilter)
+      1088389 read(s) filtered by: ((((((MappingQualityReadFilter AND MappingQualityAvailableReadFilter) AND MappedReadFilter) AND NotSecondaryAlignmentReadFilter) AND NotDuplicateReadFilter) AND PassesVendorQualityCheckReadFilter) AND NonZeroReferenceLengthAlignmentReadFilter)
+          1088389 read(s) filtered by: (((((MappingQualityReadFilter AND MappingQualityAvailableReadFilter) AND MappedReadFilter) AND NotSecondaryAlignmentReadFilter) AND NotDuplicateReadFilter) AND PassesVendorQualityCheckReadFilter)
+              1088389 read(s) filtered by: ((((MappingQualityReadFilter AND MappingQualityAvailableReadFilter) AND MappedReadFilter) AND NotSecondaryAlignmentReadFilter) AND NotDuplicateReadFilter)
+                  1088389 read(s) filtered by: (((MappingQualityReadFilter AND MappingQualityAvailableReadFilter) AND MappedReadFilter) AND NotSecondaryAlignmentReadFilter)
+                      1088389 read(s) filtered by: ((MappingQualityReadFilter AND MappingQualityAvailableReadFilter) AND MappedReadFilter)
+                          1088293 read(s) filtered by: (MappingQualityReadFilter AND MappingQualityAvailableReadFilter)
+                              1088293 read(s) filtered by: MappingQualityReadFilter 
+                          96 read(s) filtered by: MappedReadFilter 
+
+19:38:17.729 INFO  ProgressMeter -           Y:59370576             10.5                233519          22153.6
+19:38:17.729 INFO  ProgressMeter - Traversal complete. Processed 233519 total regions in 10.5 minutes.
+19:38:17.836 INFO  PairHMM - Total compute time in PairHMM computeLogLikelihoods() : 147.977178694
+19:38:17.836 INFO  SmithWatermanAligner - Total compute time in java Smith-Waterman : 132.96 sec
+19:38:17.837 INFO  HaplotypeCaller - Shutting down engine
+[July 21, 2018 7:38:17 PM CDT] org.broadinstitute.hellbender.tools.walkers.haplotypecaller.HaplotypeCaller done. Elapsed time: 10.57 minutes.
+Runtime.totalMemory()=8151105536
+Using GATK jar /diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/share/gatk4-4.0.5.2-0/gatk-package-4.0.5.2-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -jar /diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/share/gatk4-4.0.5.2-0/gatk-package-4.0.5.2-local.jar HaplotypeCaller -R /diskmnt/Datasets/Reference/human_genome/GRCh37-lite/GRCh37-lite.fa -I /diskmnt/Datasets/TCGA/example_BAM/TCGA-73-4677-11A-01D-1203-02_IlluminaHiSeq-DNASeq_whole.bam -L /diskmnt/Projects/Users/wliang/Germline_Noncoding/RegulatoryGermline/reference/interval_chrY.list -O TCGA-73-4677-11A-01D-1203-02.gatk.raw.chrY.vcf --standard-min-confidence-threshold-for-calling 30.0

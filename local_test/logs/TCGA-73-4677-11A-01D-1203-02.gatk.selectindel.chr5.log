@@ -1,0 +1,35 @@
+21:03:21.353 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/share/gatk4-4.0.5.2-0/gatk-package-4.0.5.2-local.jar!/com/intel/gkl/native/libgkl_compression.so
+21:03:21.381 WARN  NativeLibraryLoader - Unable to load libgkl_compression.so from native/libgkl_compression.so (/tmp/wliang/libgkl_compression5380479247089069154.so: /tmp/wliang/libgkl_compression5380479247089069154.so: failed to map segment from shared object: Operation not permitted)
+21:03:21.384 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/share/gatk4-4.0.5.2-0/gatk-package-4.0.5.2-local.jar!/com/intel/gkl/native/libgkl_compression.so
+21:03:21.392 WARN  NativeLibraryLoader - Unable to load libgkl_compression.so from native/libgkl_compression.so (/tmp/wliang/libgkl_compression577662772903629763.so: /tmp/wliang/libgkl_compression577662772903629763.so: failed to map segment from shared object: Operation not permitted)
+21:03:21.499 INFO  SelectVariants - ------------------------------------------------------------
+21:03:21.499 INFO  SelectVariants - The Genome Analysis Toolkit (GATK) v4.0.5.2
+21:03:21.499 INFO  SelectVariants - For support and documentation go to https://software.broadinstitute.org/gatk/
+21:03:21.500 INFO  SelectVariants - Executing as wliang@denali on Linux v3.10.0-693.11.1.el7.x86_64 amd64
+21:03:21.500 INFO  SelectVariants - Java runtime: OpenJDK 64-Bit Server VM v1.8.0_92-b15
+21:03:21.500 INFO  SelectVariants - Start Date/Time: July 21, 2018 9:03:21 PM CDT
+21:03:21.500 INFO  SelectVariants - ------------------------------------------------------------
+21:03:21.500 INFO  SelectVariants - ------------------------------------------------------------
+21:03:21.500 INFO  SelectVariants - HTSJDK Version: 2.16.0
+21:03:21.500 INFO  SelectVariants - Picard Version: 2.18.7
+21:03:21.500 INFO  SelectVariants - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+21:03:21.501 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+21:03:21.501 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+21:03:21.501 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+21:03:21.501 INFO  SelectVariants - Deflater: JdkDeflater
+21:03:21.501 INFO  SelectVariants - Inflater: JdkInflater
+21:03:21.501 INFO  SelectVariants - GCS max retries/reopens: 20
+21:03:21.501 INFO  SelectVariants - Using google-cloud-java patch 6d11bef1c81f885c26b2b56c8616b7a705171e4f from https://github.com/droazen/google-cloud-java/tree/dr_all_nio_fixes
+21:03:21.501 INFO  SelectVariants - Initializing engine
+21:03:21.960 INFO  FeatureManager - Using codec VCFCodec to read file file:///diskmnt/Projects/Users/wliang/Germline_Noncoding/08_Snakemake/local_test/TCGA-73-4677-11A-01D-1203-02.gatk.raw.chr5.vcf
+21:03:21.998 INFO  SelectVariants - Done initializing engine
+21:03:22.024 INFO  ProgressMeter - Starting traversal
+21:03:22.025 INFO  ProgressMeter -        Current Locus  Elapsed Minutes    Variants Processed  Variants/Minute
+21:03:23.440 INFO  ProgressMeter -          5:169277552              0.0                  8966         380452.6
+21:03:23.440 INFO  ProgressMeter - Traversal complete. Processed 8966 total variants in 0.0 minutes.
+21:03:23.495 INFO  SelectVariants - Shutting down engine
+[July 21, 2018 9:03:23 PM CDT] org.broadinstitute.hellbender.tools.walkers.variantutils.SelectVariants done. Elapsed time: 0.04 minutes.
+Runtime.totalMemory()=2367684608
+Using GATK jar /diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/share/gatk4-4.0.5.2-0/gatk-package-4.0.5.2-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -jar /diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/share/gatk4-4.0.5.2-0/gatk-package-4.0.5.2-local.jar SelectVariants -R /diskmnt/Datasets/Reference/human_genome/GRCh37-lite/GRCh37-lite.fa -V TCGA-73-4677-11A-01D-1203-02.gatk.raw.chr5.vcf -O TCGA-73-4677-11A-01D-1203-02.gatk.indel.chr5.vcf -select-type INDEL
