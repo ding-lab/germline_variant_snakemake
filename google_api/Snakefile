@@ -119,7 +119,7 @@ rule pindel_filter_config:
     params: 
         sample="{sample}",
         chr="{ix}",
-        ref_file = lambda wildcards: str(REF_DICT[wildcards.sample]).split("/")[2]
+        ref_file = lambda wildcards: str(REF_DICT[wildcards.sample]).split("/")[-1]
     run:
         for ix in CHR:
             filename=f"pindel/chr{params.chr}/{params.sample}.pindel.input.chr{params.chr}.txt"
