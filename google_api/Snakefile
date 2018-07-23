@@ -123,8 +123,6 @@ rule pindel_filter_config:
     run:
         for ix in CHR:
             filename=f"pindel/chr{params.chr}/{params.sample}.pindel.input.chr{params.chr}.txt"
-            #print(filename, {params.ref_file})
-            #os.makedirs(os.path.dirname(filename), exist_ok=True)
             with open(filename, "w") as f:
                 f.write ( \
 f"pindel.filter.pindel2vcf = /opt/conda/bin/pindel2vcf\n\
@@ -141,6 +139,8 @@ pindel.filter.germline.require_balanced_reads = 'true'\n\
 pindel.filter.germline.remove_complex_indels = 'true'\n\
 pindel.filter.germline.max_num_homopolymer_repeat_units = 6")
 
+rule test:
+    input: "pindel/chr22/TCGA-BL-A13J-11A-13D-A10R.pindel.input.chr22.txt"
 
 rule filter_pindel:
     input: "pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt"
