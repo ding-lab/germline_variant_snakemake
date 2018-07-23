@@ -47,12 +47,12 @@ rule gatk_selectvariant_indel:
 rule gatk_merge_snp_vcf:
     input: calls= expand('{{sample}}.gatk.snp.chr{ix}.vcf', ix=CHR)
     output: "{sample}.gatk.snp.vcf"
-    shell: "bcftools concact -o {output} {input}"
+    shell: "bcftools concat -o {output} {input}"
 
 rule gatk_merge_indel_vcf:
     input: calls= expand('{{sample}}.gatk.indel.chr{ix}.vcf', ix=CHR)
     output: "{sample}.gatk.indel.vcf"
-    shell: "bcftools concact -o {output} {input}"
+    shell: "bcftools concat -o {output} {input}"
 
 ###Run Varscan
 rule varscan_mpileup2snp:
@@ -86,12 +86,12 @@ rule varscan_indel_index:
 rule varscan_merge_snp_vcf:
     input: calls= expand('{{sample}}.varscan.snp.chr{ix}.vcf.gz', ix=CHR)
     output: "{sample}.varscan.snp.vcf"
-    shell: "bcftools concact -o {output} {input}"
+    shell: "bcftools concat -o {output} {input}"
 
 rule varscan_merge_indel_vcf:
     input: calls= expand('{{sample}}.varscan.indel.chr{ix}.vcf.gz', ix=CHR)
     output: "{sample}.varscan.indel.vcf"
-    shell: "bcftools concact -o {output} {input}"
+    shell: "bcftools concat -o {output} {input}"
 
 ###Run Pindel
 
@@ -155,7 +155,7 @@ rule index_pindel:
 rule pindel_merge_vcf:
     input: calls=expand("pindel/chr{ix}/{{sample}}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf.gz", ix=CHR)
     output: "{sample}.pindel.vcf"
-    shell: "bcftools concact -o {output} {input}"
+    shell: "bcftools concat -o {output} {input}"
 
 rule all_tools:
     input: 
@@ -170,16 +170,3 @@ rule filter:
     output: "{sample}.gatk.snp.filtered.vcf", "{sample}.gatk.indel.filtered.vcf", "{sample}.varscan.snp.filtered.vcf", "{sample}.varscan.indel.filtered.vcf"
     params: sample = '{sample}'
     shell: "perl filter_gatk_varscan.pl `pwd` {params.sample}"
-
-#rule merge_vcf:
-#    input: 
-#        gsnp = "gatk.snp.filtered.vcf",
-#        gindel = "gatk.indel.filtered.vcf",
-#        vsnp = "varscan.snp.filtered.vcf", 
-#        vindel = "varscan.indel.filtered.vcf",
-#        pindel = "pindel.vcf",
-#        genome_fa = GENOME_FA
-#    output: "merged.vcf"
-#    singularity: "docker://broadinstitute/gatk3:3.8-0"
-#    shell: "java -Xms256m -Xmx512m -jar GenomeAnalysisTK.jar -T CombineVariants -R {input.genome_fa} -o {output} --variant:gsnp {input.gsnp} --variant:gindel {input.gindel} --variant:vsnp {input.vsnp} --variant:vindel {input.vindel} --variant:pindel {input.pindel} -genotypeMergeOptions PRIORITIZE -priority gsnp,vsnp,gindel,vindel,pindel"
-    
