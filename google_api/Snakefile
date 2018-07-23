@@ -47,13 +47,12 @@ rule gatk_selectvariant_indel:
 rule gatk_merge_snp_vcf:
     input: calls= expand('{{sample}}.gatk.snp.chr{ix}.vcf', ix=CHR)
     output: "{sample}.gatk.snp.vcf"
-    wrapper: "0.26.0/bio/bcftools/concat"
+    shell: "bcftools concact -o {output} {input}"
 
 rule gatk_merge_indel_vcf:
     input: calls= expand('{{sample}}.gatk.indel.chr{ix}.vcf', ix=CHR)
     output: "{sample}.gatk.indel.vcf"
-    wrapper: "0.26.0/bio/bcftools/concat"
-
+    shell: "bcftools concact -o {output} {input}"
 
 ###Run Varscan
 rule varscan_mpileup2snp:
@@ -87,13 +86,12 @@ rule varscan_indel_index:
 rule varscan_merge_snp_vcf:
     input: calls= expand('{{sample}}.varscan.snp.chr{ix}.vcf.gz', ix=CHR)
     output: "{sample}.varscan.snp.vcf"
-    wrapper: "0.26.0/bio/bcftools/concat"
+    shell: "bcftools concact -o {output} {input}"
 
 rule varscan_merge_indel_vcf:
     input: calls= expand('{{sample}}.varscan.indel.chr{ix}.vcf.gz', ix=CHR)
     output: "{sample}.varscan.indel.vcf"
-    wrapper: "0.26.0/bio/bcftools/concat"
-
+    shell: "bcftools concact -o {output} {input}"
 
 ###Run Pindel
 
@@ -157,7 +155,7 @@ rule index_pindel:
 rule pindel_merge_vcf:
     input: calls=expand("pindel/chr{ix}/{{sample}}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf.gz", ix=CHR)
     output: "{sample}.pindel.vcf"
-    wrapper: "0.27.0/bio/bcftools/concat"
+    shell: "bcftools concact -o {output} {input}"
 
 rule all_tools:
     input: 
