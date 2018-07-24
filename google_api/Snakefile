@@ -4,7 +4,9 @@ import os
 import pandas as pd
 from pathlib import Path
 
-INTERVALPREFIX = "/home/germline_variant_snakemake/files/interval_chr"
+configfile: "config.yaml"
+
+INTERVALPREFIX = config["interval_prefix"]
 CHR=[str(i) for i in range (1,23)]
 CHR.append("X")
 CHR.append("Y")
@@ -94,7 +96,6 @@ rule varscan_merge_indel_vcf:
     shell: "bcftools concat -o {output} {input}"
 
 ###Run Pindel
-
 rule pindel_call:
     input:
         ref = lambda wildcards: REF_DICT[wildcards.sample],
@@ -117,13 +118,14 @@ rule pindel_filter_config:
     params: 
         sample="{sample}",
         chr="{ix}",
-        ref_file = lambda wildcards: str(REF_DICT[wildcards.sample]).split("/")[-1]
+        ref_file = lambda wildcards: str(REF_DICT[wildcards.sample]).split("/")[-1],
+        path2pindel2vcf = config["path_to_pindel2vcf"]
     run:
         for ix in CHR:
             filename=f"pindel/chr{params.chr}/{params.sample}.pindel.input.chr{params.chr}.txt"
             with open(filename, "w") as f:
                 f.write ( \
-f"pindel.filter.pindel2vcf = /opt/conda/bin/pindel2vcf\n\
+f"pindel.filter.pindel2vcf = {params.path2pindel2vcf}\n\
 pindel.filter.variants_file = pindel/chr{params.chr}/{params.sample}.pindel.out.chr{params.chr}.raw\n\
 pindel.filter.REF = /mnt/data/input/{params.ref_file}\n\
 pindel.filter.date = 000000\n\
@@ -136,9 +138,6 @@ pindel.filter.germline.min_var_allele_freq = 0.20\n\
 pindel.filter.germline.require_balanced_reads = 'true'\n\
 pindel.filter.germline.remove_complex_indels = 'true'\n\
 pindel.filter.germline.max_num_homopolymer_repeat_units = 6")
-
-rule test:
-    input: "pindel/chr22/TCGA-BL-A13J-11A-13D-A10R.pindel.input.chr22.txt"
 
 rule filter_pindel:
     input: "pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt"
