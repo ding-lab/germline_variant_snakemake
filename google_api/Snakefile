@@ -11,8 +11,6 @@ CHR=[str(i) for i in range (1,23)]
 CHR.append("X")
 CHR.append("Y")
 
-configfile: "config.yaml"
-
 ### Get BAM path and sample id from config file
 
 SAMPLE = pd.read_table(config["samples"])["sample"].drop_duplicates().tolist()
