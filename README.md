@@ -44,7 +44,8 @@ Snakemake workflow to call germline variant by using GATK, VarScan, and Pindel. 
 4. Clone the repository: `git clone https://github.com/ding-lab/germline_variant_snakemake.git`
 
 5. Run a google pipeline API commend: 
-`gcloud alpha genomics pipelines run \
+```
+gcloud alpha genomics pipelines run \
 --pipeline-file ~/germline_variant_snakemake/google_api/germline_snakemake.yaml \
 --inputs fafile=gs://dinglab/reference/Homo_sapiens_assembly19.fasta,\
 faifile=gs://dinglab/reference/Homo_sapiens_assembly19.fasta.fai,\
@@ -57,3 +58,4 @@ sample=TCGA-44-4112-11A-01D-1103-02 \
 --project washu-medicine-pancan \
 --disk-size datadisk:50 \
 --preemptible`
+```
