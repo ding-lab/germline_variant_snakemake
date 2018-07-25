@@ -62,6 +62,20 @@ sample=TCGA-44-4112-11A-01D-1103-02 \
 --preemptible
 ```
 
+## Configure snakemake workflow based on your working enviornment (only for local_test)
+
+1. Find out the path to the cloned repository.
+
+2. `source activate snakemake` and find out the path to the `pindel2vcf` by typing `which pindel`. `pindel` and `pindel2vcf` are in the same folder.
+
+3. `vi config.yaml`
+
+```
+samples: {Your file with header and sample lines} #sample lines should follow the format: ID\tPath2Ref\tPath2BAM
+interval_prefix: "{Path to cloned repo}/germline_variant_snakemake/files/interval_chr"
+path_to_pindel2vcf: "{Path to pindel}2vcf"
+```
+
 ## Result VCF
 The result vcfs are `{sample}.gatk.snv.filtered.vcf`, `{sample}.gatk.indel.filtered.vcf`, `{sample}.varscan.snv.filtered.vcf`, `{sample}.varscan.indel.filtered.vcf`, `{sample}.pindel.vcf`.
 
