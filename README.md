@@ -57,5 +57,5 @@ sample=TCGA-44-4112-11A-01D-1103-02 \
 --logging gs://wliang/germline_snakemake/logging/LowPass/ \
 --project washu-medicine-pancan \
 --disk-size datadisk:50 \
---preemptible`
+--preemptible
 ```
