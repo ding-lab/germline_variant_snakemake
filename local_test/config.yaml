@@ -1,3 +1,3 @@
 samples: sample.txt
 interval_prefix: "/diskmnt/Projects/Users/wliang/Germline_Noncoding/RegulatoryGermline/reference/interval_chr"
-path_to_pindel2vcf: "/diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/bin/pindel2vc"
+path_to_pindel2vcf: "/diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/bin/pindel2vcf"

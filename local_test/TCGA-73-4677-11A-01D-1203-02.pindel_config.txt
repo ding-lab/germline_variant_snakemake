@@ -1,1 +1,0 @@
-/diskmnt/Datasets/TCGA/example_BAM/TCGA-73-4677-11A-01D-1203-02_IlluminaHiSeq-DNASeq_whole.bam	500	TCGA-73-4677-11A-01D-1203-02

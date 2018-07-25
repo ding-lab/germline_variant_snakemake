@@ -1,3 +1,0 @@
-sample	reference	bampath	filename	
-TCGA-BL-A13J-10A-01D-A10S-08	dinglab/reference/Homo_sapiens_assembly19.fasta	5aa919de-0aa0-43ec-9ec3-288481102b6d/tcga/BLCA/DNA/WGS/BI/ILLUMINA/G32459.TCGA-BL-A13J-10A-01D-A10S-08.3.bam	G32459.TCGA-BL-A13J-10A-01D-A10S-08.3.bam
-TCGA-44-4112-10A-01D-A46W-08	dinglab/reference/Homo_sapiens_assembly19.fasta	5aa919de-0aa0-43ec-9ec3-288481102b6d/tcga/LUAD/DNA/WGS/BI/ILLUMINA/G92908.TCGA-44-4112-10A-01D-A46W-08.2.bam	G92908.TCGA-44-4112-10A-01D-A46W-08.2.bam
