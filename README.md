@@ -33,7 +33,7 @@ Snakemake workflow to call germline variant by using GATK, VarScan, and Pindel. 
 
 6. Run a task: `snakemae -j ${how many cpu you want to use} -p all_tools`. Noted that you have to prepare the pindel config file.
 
-## How to start on a google cloud
+## How to start on google cloud
 
 1. Generate the required commend for google cloud by using the script: `/diskmnt/Projects/Users/wliang/Germline_Noncoding/06_Cloud_Variant_Calling/bampath/generate_command.snakemake.sh`
 
