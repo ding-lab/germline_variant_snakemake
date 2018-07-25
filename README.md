@@ -61,3 +61,22 @@ sample=TCGA-44-4112-11A-01D-1103-02 \
 --disk-size datadisk:50 \
 --preemptible
 ```
+
+## Result VCF
+The result vcfs are `{sample}.gatk.snv.filtered.vcf`, `{sample}.gatk.indel.filtered.vcf`, `{sample}.varscan.snv.filtered.vcf`, `{sample}.varscan.indel.filtered.vcf`, `{sample}.pindel.vcf`.
+
+## Merge result VCFs 
+There is no good commend to replace CombineVariants in gatk4, so we need to stick with gatk 3.8
+1. Use docker image: `broadinstitute/gatk3:3.8-0`
+2. Merge commend
+
+```
+java -Xms256m -Xmx512m -jar GenomeAnalysisTK.jar -T CombineVariants -R /path/to/reference/GRCh37-lite.fa -o ${id}.merged.vcf \
+--variant:gsnp ${id}.gatk.snp.filtered.vcf \
+--variant:gindel ${id}.gatk.indel.filtered.vcf \
+--variant:vsnp ${id}.varscan.snp.filtered.vcf \
+--variant:vindel ${id}.varscan.indel.filtered.vcf \
+--variant:pindel ${id}.pindel.vcf \
+-genotypeMergeOptions PRIORITIZE \
+-priority gsnp,vsnp,gindel,vindel,pindel
+```
