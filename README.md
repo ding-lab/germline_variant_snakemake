@@ -31,7 +31,7 @@ Snakemake workflow to call germline variant by using GATK, VarScan, and Pindel. 
 
 5. Dry run: `snakemake -n -p all_tools`
 
-6. Run a task: `snakemake -j ${how many cpu you want to use} -p all_tools`.
+6. Run a task: `snakemake -j ${how many cpu you want to use} -p all_tools`. If you want to keep every output files, try `snakemake -j {numbers} -p all_tools --notemp`.
 
 ## How to start on google cloud
 
