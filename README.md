@@ -43,8 +43,17 @@ Snakemake workflow to call germline variant by using GATK, VarScan, and Pindel. 
 
 4. Clone the repository: `git clone https://github.com/ding-lab/germline_variant_snakemake.git`
 
-5. Run a commend: `gcloud alpha genomics pipelines run --pipeline-file ~/germline_variant_snakemake/google_api/germline_snakemake.yaml --inputs fafile=gs://dinglab/reference/Homo_sapiens_assembly19.fasta,faifile=gs://dinglab/refer
-ence/Homo_sapiens_assembly19.fasta.fai,dictfile=gs://dinglab/reference/Homo_sapiens_assembly19.dict,bamfile=gs://5aa919de-0aa0-43ec-9ec3-288481102b6d/tcga/LUAD/DNA/WGS/HMS-RK/ILLUMINA/TCGA-44-4112-11A-01D-1103_1
-20318_SN1120_0124_AC0HNPACXX_s_2_rg.sorted.bam,baifile=gs://5aa919de-0aa0-43ec-9ec3-288481102b6d/tcga/LUAD/DNA/WGS/HMS-RK/ILLUMINA/TCGA-44-4112-11A-01D-1103_120318_SN1120_0124_AC0HNPACXX_s_2_rg.sorted.bam.bai,sa
-mple=TCGA-44-4112-11A-01D-1103-02 --outputs outputPath=gs://wliang/germline_snakemake/output/LowPass/TCGA-44-4112-11A-01D-1103-02/ --logging gs://wliang/germline_snakemake/logging/LowPass/ --project washu-medici
-ne-pancan --disk-size datadisk:50 --preemptible`
+5. Run a google pipeline API commend: 
+`gcloud alpha genomics pipelines run \
+--pipeline-file ~/germline_variant_snakemake/google_api/germline_snakemake.yaml \
+--inputs fafile=gs://dinglab/reference/Homo_sapiens_assembly19.fasta,\
+faifile=gs://dinglab/reference/Homo_sapiens_assembly19.fasta.fai,\
+dictfile=gs://dinglab/reference/Homo_sapiens_assembly19.dict,\
+bamfile=gs://5aa919de-0aa0-43ec-9ec3-288481102b6d/tcga/LUAD/DNA/WGS/HMS-RK/ILLUMINA/TCGA-44-4112-11A-01D-1103_120318_SN1120_0124_AC0HNPACXX_s_2_rg.sorted.bam,\
+baifile=gs://5aa919de-0aa0-43ec-9ec3-288481102b6d/tcga/LUAD/DNA/WGS/HMS-RK/ILLUMINA/TCGA-44-4112-11A-01D-1103_120318_SN1120_0124_AC0HNPACXX_s_2_rg.sorted.bam.bai,\
+sample=TCGA-44-4112-11A-01D-1103-02 \
+--outputs outputPath=gs://wliang/germline_snakemake/output/LowPass/TCGA-44-4112-11A-01D-1103-02/ \
+--logging gs://wliang/germline_snakemake/logging/LowPass/ \
+--project washu-medicine-pancan \
+--disk-size datadisk:50 \
+--preemptible`
