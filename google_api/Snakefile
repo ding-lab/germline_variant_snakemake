@@ -101,7 +101,7 @@ rule pindel_call:
     output: temp("pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw")
     params:
         prefix="pindel/chr{ix}/{sample}.chr{ix}",
-        extra="-x 4 -w 0.1 -B 0 -M 3 -J ../files/pindel-centromere-exclude.bed -c {ix}",
+        extra="-x 4 -w 0.1 -B 0 -M 3 -J /home/germline_variant_snakemake/files/pindel-centromere-exclude.bed -c {ix}",
         chr="{ix}",
         sample="{sample}",
     log: "logs/{sample}.pindel.chr{ix}.log"
@@ -142,7 +142,7 @@ rule filter_pindel:
     output: temp("pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf")
     params: chr='{ix}',
             sample='{sample}'
-    shell: "perl ../scripts/pindel_filter.v0.5.pl {input}"
+    shell: "perl /home/germline_variant_snakemake/scripts/pindel_filter.v0.5.pl {input}"
 
 rule index_pindel:
     input: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf"
@@ -166,4 +166,4 @@ rule filter:
     input: "{sample}.gatk.snp.vcf", "{sample}.gatk.indel.vcf", "{sample}.varscan.snp.vcf", "{sample}.varscan.indel.vcf", "{sample}.pindel.vcf"
     output: "{sample}.gatk.snp.filtered.vcf", "{sample}.gatk.indel.filtered.vcf", "{sample}.varscan.snp.filtered.vcf", "{sample}.varscan.indel.filtered.vcf"
     params: sample = '{sample}'
-    shell: "perl ../scripts/filter_gatk_varscan.pl `pwd` {params.sample}"
+    shell: "perl /home/germline_variant_snakemake/scripts/filter_gatk_varscan.pl `pwd` {params.sample}"
