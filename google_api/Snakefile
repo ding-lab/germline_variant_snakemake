@@ -4,7 +4,7 @@ import os
 import pandas as pd
 from pathlib import Path
 
-configfile: "config.yaml"
+configfile: "/home/germline_variant_snakemake/google_api/config.yaml"
 
 INTERVALPREFIX = config["interval_prefix"]
 CHR=[str(i) for i in range (1,23)]
