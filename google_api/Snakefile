@@ -124,7 +124,7 @@ rule pindel_filter_config:
             with open(filename, "w") as f:
                 f.write ( \
 f"pindel.filter.pindel2vcf = {params.path2pindel2vcf}\n\
-pindel.filter.variants_file = pindel/chr{params.chr}/{params.sample}.pindel.out.chr{params.chr}.raw\n\
+pindel.filter.variants_file = /mnt/data/pindel/chr{params.chr}/{params.sample}.pindel.out.chr{params.chr}.raw\n\
 pindel.filter.REF = /mnt/data/input/{params.ref_file}\n\
 pindel.filter.date = 000000\n\
 pindel.filter.heterozyg_min_var_allele_freq = 0.2\n\
@@ -142,7 +142,7 @@ rule filter_pindel:
     output: temp("pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf")
     params: chr='{ix}',
             sample='{sample}'
-    shell: "perl /home/germline_variant_snakemake/scripts/pindel_filter.v0.5.pl {input}"
+    shell: "perl /home/germline_variant_snakemake/scripts/pindel_filter.v0.5.pl /mnt/data/{input}"
 
 rule index_pindel:
     input: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf"
