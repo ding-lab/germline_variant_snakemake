@@ -99,6 +99,7 @@ rule pindel_call:
         ref = lambda wildcards: REF_DICT[wildcards.sample],
         samples = lambda wildcards: FILE_DICT[wildcards.sample]
     output: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw"
+    priority: 50
     params:
         prefix="pindel/chr{ix}/{sample}.chr{ix}",
         extra="-x 4 -w 0.1 -B 0 -M 3 -J /home/germline_variant_snakemake/files/pindel-centromere-exclude.bed -c {ix}",
@@ -113,6 +114,7 @@ rule pindel_call:
 rule pindel_filter_config:
     input: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw"
     output: "pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt"
+    priority: 40
     params: 
         sample="{sample}",
         chr="{ix}",
@@ -140,6 +142,7 @@ pindel.filter.germline.max_num_homopolymer_repeat_units = 6")
 rule filter_pindel:
     input: "pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt"
     output: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf"
+    priority: 30
     params: chr='{ix}',
             sample='{sample}'
     shell: "perl /home/germline_variant_snakemake/scripts/pindel_filter.v0.5.pl {input}"
@@ -147,11 +150,13 @@ rule filter_pindel:
 rule index_pindel:
     input: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf"
     output: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf.gz"
+    priority: 20
     shell: 'bcftools view {input} -Oz -o {output}; bcftools index {output}'
 
 rule pindel_merge_vcf:
     input: calls=expand("pindel/chr{ix}/{{sample}}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf.gz", ix=CHR)
     output: "{sample}.pindel.vcf"
+    priority: 10
     shell: "bcftools concat -o {output} {input}"
 
 rule all_tools:
