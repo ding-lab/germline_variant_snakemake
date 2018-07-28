@@ -37,7 +37,6 @@ docker:
     touch /mnt/data/input/*.dict &&
     touch /mnt/data/input/*.bai &&
     cd /mnt/data/ &&
-    cp /home/germline_variant_snakemake/scripts/*.pl . &&
     echo -e "sample\treference\tbampath" > sample.txt &&
     echo -e "${sample}\t${fafile}\t${bamfile}" | awk -F "\t" '{OFS="\t"; l1=split($2, b, "/"); l2=split($3, c, "/"); print $1, "/mnt/data/input/"b[l1], "/mnt/data/input/"c[l2]}' >> sample.txt &&
     echo -e "${bamfile}\t500\t${sample}" | awk -F "\t" '{OFS="\t"; l1=split($1, b, "/"); print "/mnt/data/input/"b[l1], $2, $3}' > ${sample}.pindel_config.txt &&
