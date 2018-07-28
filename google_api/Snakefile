@@ -124,7 +124,7 @@ rule pindel_filter_config:
             with open(filename, "w") as f:
                 f.write ( \
 f"pindel.filter.pindel2vcf = {params.path2pindel2vcf}\n\
-pindel.filter.variants_file = pindel/chr{params.chr}/{params.sample}.pindel.out.chr{params.chr}.raw\n\
+pindel.filter.variants_file = /mnt/data/pindel/chr{params.chr}/{params.sample}.pindel.out.chr{params.chr}.raw\n\
 pindel.filter.REF = /mnt/data/input/{params.ref_file}\n\
 pindel.filter.date = 000000\n\
 pindel.filter.heterozyg_min_var_allele_freq = 0.2\n\
