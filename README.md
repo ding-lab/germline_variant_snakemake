@@ -71,7 +71,8 @@ sample=TCGA-44-4112-11A-01D-1103-02 \
 3. `vi config.yaml`
 
 ```
-samples: {Your file with header and sample lines} #sample lines should follow the format: ID\tPath2Ref\tPath2BAM
+samples: {Your file with header and sample lines} 
+# sample lines should follow the format: ID\tPath2Ref\tPath2BAM
 interval_prefix: "{Path to cloned repo}/germline_variant_snakemake/files/interval_chr"
 path_to_pindel2vcf: "{Path to pindel}2vcf"
 ```
