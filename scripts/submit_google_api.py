@@ -8,6 +8,7 @@
 import os
 import sys
 import pandas as pd
+import subprocess
 
 # Read sample manifest and create dictionary of {sample:google_pipeline_api_commend}
 def cmd_from_manifest(path_to_manifest):
@@ -35,12 +36,22 @@ def cmd_from_manifest(path_to_manifest):
     d = df[["case_full_barcode","cmd_input"]].drop_duplicates().set_index("case_full_barcode")["cmd_input"].to_dict()
     return d
 
-# Take https://github.com/googlegenomics/pipelines-api-examples/tree/master/tools for reference
-# Return status: Done, Working, and Fail
-def check_status(operation_id, sec):
-    cmd = "gcloud alpha genomics operations describe " 
-    os.system()
 
+# Launch VM and get operation id from stderr
+def get_operation_id(cmd):
+    output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT, universal_newlines=True).splitlines()[0].split("/")[1].strip("].")
+    return output
+
+# Take https://github.com/googlegenomics/pipelines-api-examples/tree/master/tools for reference
+# Return status: Done and Fail
+def check_status(operation_id, sec):
+    cmd = "gcloud alpha genomics operations describe "+operation_id+" --format='value(done)'" 
+    status = subprocess.check_output(cmd, shell=True, universal_newlines=True).splitlines()[0]
+    if status == "False":
+        time.sleep(sec)
+        status = subprocess.check_output(cmd, shell=True, universal_newlines=True).splitlines()[0]
+    else:
+        return status
 
 
 # Define again() function to ask user if they want to use the calculator again
@@ -66,4 +77,6 @@ Please type Y for YES or N for NO.
 
 
 CMD_DICT = cmd_from_manifest(sys.argv[1])
+print (CMD_DICT)
 
+##gcloud alpha genomics operations describe EO_koavTLBiyiuPkg5itowsggsbm6-geKg9wcm9kdWN0aW9uUXVldWU --format='value(done)'
