@@ -1,0 +1,91 @@
+name: germline_snakemake
+description: Snakemake workflow to call germline variant by using GATK, VarScan, and Pindel
+
+# Define the resources needed for this pipeline.
+resources:
+  minimumCpuCores: 64
+  minimumRamGb: 240
+  zones:
+  - us-central1-a
+  - us-central1-b
+  - us-central1-c
+  - us-central1-f
+  - us-east1-b
+  - us-east1-c
+  - us-east1-d
+  preemptible: True
+
+  # Create a data disk that is attached to the VM and destroyed when the
+  # pipeline terminates.
+  disks:
+  - name: datadisk
+    autoDelete: True
+
+    # Within the Docker container, specify a mount point for the disk.
+    mountPoint: /mnt/data
+
+# Specify the Docker image to use along with the command
+docker:
+  imageName: wenwiliang/germline_variant_snakemake
+
+  # The Pipelines API will create the input directory when localizing files,
+  # but does not create the output directory.
+  cmd: >
+    mkdir /mnt/data/output && 
+    find /mnt/data/input &&
+    touch /mnt/data/input/*.fai &&
+    touch /mnt/data/input/*.dict &&
+    touch /mnt/data/input/*.bai &&
+    cd /mnt/data/ &&
+    echo -e "sample\treference\tbampath" > sample.txt &&
+    echo -e "${sample}\t${fafile}\t${bamfile}" | awk -F "\t" '{OFS="\t"; l1=split($2, b, "/"); l2=split($3, c, "/"); print $1, "/mnt/data/input/"b[l1], "/mnt/data/input/"c[l2]}' >> sample.txt &&
+    echo -e "${bamfile}\t500\t${sample}" | awk -F "\t" '{OFS="\t"; l1=split($1, b, "/"); print "/mnt/data/input/"b[l1], $2, $3}' > ${sample}.pindel_config.txt &&
+    snakemake --snakefile /home/germline_variant_snakemake/google_api/Snakefile -j 48 -p all_tools --restart-times 10 &&
+    cp ${sample}.*.filtered.vcf /mnt/data/output &&
+    cp ${sample}.pindel.vcf /mnt/data/output
+
+# The Pipelines API currently supports GCS paths, along with patterns (globs),
+# but it doesn't directly support a list of files being passed as a single input
+# parameter ("gs://bucket/foo.bam gs://bucket/bar.bam").
+inputParameters:
+- name: fafile
+  description: Cloud Storage path or pattern to input file(s)
+  localCopy:
+    path: input/
+    disk: datadisk
+- name: faifile
+  description: Cloud Storage path or pattern to input files
+  localCopy:
+    path: input/
+    disk: datadisk
+- name: dictfile
+  description: Cloud Storage path or pattern to input files
+  localCopy:
+    path: input/
+    disk: datadisk
+- name: bamfile
+  description: Cloud Storage path
+  localCopy:
+    path: input/
+    disk: datadisk
+- name: baifile
+  description: Cloud Storage path or pattern to input file(s)
+  localCopy:
+    path: input/
+    disk: datadisk
+- name: sample
+  description: File names
+- name: fafile
+  description: File names
+- name: bamfile
+  description: File names
+
+# By specifying an outputParameter, we instruct the pipelines API to
+# copy /mnt/data/output/* to the Cloud Storage location specified in
+# the pipelineArgs (see below).
+outputParameters:
+- name: outputPath
+  description: Cloud Storage path for where to samtools output
+  localCopy:
+    path: output/*
+    disk: datadisk
