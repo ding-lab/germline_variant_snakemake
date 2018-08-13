@@ -13,7 +13,7 @@ Snakemake workflow to call germline variant by using GATK, VarScan, and Pindel. 
 
 `google_api`: Snakemake workflow combined with google pipeline API successfully run on google cloud. 
 
-`google_api_cluster`: Run snakemake workflows in a cluster mode.
+`cluster_google_api`: Run snakemake workflows in a cluster mode.
 
 ### Required Files
 
