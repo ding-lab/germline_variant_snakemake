@@ -65,28 +65,6 @@ def check_status(operation_id):
             return "Fail"
 
 
-# Define again() function to ask user if they want to use the calculator again
-def again():
-
-    # Take input from user
-    calc_again = input('''
-Do you want to calculate again?
-Please type Y for YES or N for NO.
-''')
-
-    # If user types Y, run the calculate() function
-    if calc_again == 'Y':
-        calculate()
-
-    # If user types N, say good-bye to the user and end the program
-    elif calc_again == 'N':
-        print('See you later.')
-
-    # If user types another key, run the function again
-    else:
-        again()
-
-
 #CMD_DICT = cmd_from_manifest(sys.argv[1])
 #print (CMD_DICT)
 
