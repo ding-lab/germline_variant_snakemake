@@ -9,6 +9,7 @@ import os
 import sys
 import pandas as pd
 import subprocess
+import time
 
 # Read sample manifest and create dictionary of {sample:google_pipeline_api_commend}
 def cmd_from_manifest(path_to_manifest):
@@ -46,12 +47,17 @@ def get_operation_id(cmd):
 # Return status: Done and Fail
 def check_status(operation_id, sec):
     cmd = "gcloud alpha genomics operations describe "+operation_id+" --format='value(done)'" 
+    cmd2 = "gcloud alpha genomics operations describe "+operation_id+" --format='value(error)'"
     status = subprocess.check_output(cmd, shell=True, universal_newlines=True).splitlines()[0]
     if status == "False":
         time.sleep(sec)
         status = subprocess.check_output(cmd, shell=True, universal_newlines=True).splitlines()[0]
     else:
-        return status
+        done = subprocess.check_output(cmd2, shell=True, universal_newlines=True).splitlines()[0]
+        if done == "-":
+            return "Done"
+        else:
+            return "Fail"
 
 
 # Define again() function to ask user if they want to use the calculator again
@@ -76,7 +82,8 @@ Please type Y for YES or N for NO.
         again()
 
 
-CMD_DICT = cmd_from_manifest(sys.argv[1])
-print (CMD_DICT)
+#CMD_DICT = cmd_from_manifest(sys.argv[1])
+#print (CMD_DICT)
 
+check_status("EO_koavTLBiyiuPkg5itowsggsbm6-geKg9wcm9kdWN0aW9uUXVldWU", 300)
 ##gcloud alpha genomics operations describe EO_koavTLBiyiuPkg5itowsggsbm6-geKg9wcm9kdWN0aW9uUXVldWU --format='value(done)'
