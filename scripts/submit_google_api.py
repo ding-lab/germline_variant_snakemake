@@ -32,10 +32,10 @@ def build_table(path_to_manifest):
     df["output"] = bucket+"output/"+passvalue+"/"+df["case_full_barcode"]
 
     # Get the full commend
-    df["cmd_input"] = cmd+df["gspath_to_ref"]+",faifile="+df["gspath_to_ref"]+".fai,dictfile="+df["dict"]+",bamfile="+df["gspath_to_bam"]+",baifile="+df["gspath_to_bai"]+",sample="+df["case_full_barcode"]+" --logging "+df["log"]+" --outputs outputPath="+df["output"]
+    df["cmd"] = cmd+df["gspath_to_ref"]+",faifile="+df["gspath_to_ref"]+".fai,dictfile="+df["dict"]+",bamfile="+df["gspath_to_bam"]+",baifile="+df["gspath_to_bai"]+",sample="+df["case_full_barcode"]+" --logging "+df["log"]+" --outputs outputPath="+df["output"]
 
     # build table
-    d = df[["case_full_barcode","cmd_input"]]
+    d = df[["case_full_barcode","cmd"]]
     d["status"] = "Pending"
     d["operation_id"] = "Not_Assigend"
     d["num_of_repeats"] = 0
@@ -44,9 +44,10 @@ def build_table(path_to_manifest):
 
 
 # Launch VM and get operation id from stderr
-def get_operation_id(cmd):
-    output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT, universal_newlines=True).splitlines()[0].split("/")[1].strip("].")
-    return output
+def get_operation_id(row):
+    cmd = row["cmd"]
+    operation_id = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT, universal_newlines=True).splitlines()[0].split("/")[1].strip("].")
+    return operation_id
 
 # Take https://github.com/googlegenomics/pipelines-api-examples/tree/master/tools for reference
 # Return status: Done and Fail
@@ -70,6 +71,16 @@ def check_status(operation_id):
             return "Fail"
 
 RESULT_TSV = build_table(sys.argv[1])
+UNDONE_LIST = RESULT_TSV[RESULT_TSV["status"]!="Done"]["case_full_barcode"].tolist()
+
+while len(UNDONE_LIST) !=0:
+    ## Generate a smaller tsv for task to run
+    WORKING_LIST = UNDONE_LIST[:25]
+    WORKING_TSV = RESULT_TSV[RESULT_TSV["case_full_barcode"].isin(WORKING_LIST)]
+    WORKING_TSV["operation_id"] = WORKING_TSV.apply(get_operation_id, axis=1)
+    WORKING_TSV["status"] = "Running"
+    print(WORKING_TSV)
+
 
 
 ##gcloud alpha genomics operations describe EO_koavTLBiyiuPkg5itowsggsbm6-geKg9wcm9kdWN0aW9uUXVldWU --format='value(done)'
