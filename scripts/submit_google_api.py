@@ -45,18 +45,23 @@ def get_operation_id(cmd):
 
 # Take https://github.com/googlegenomics/pipelines-api-examples/tree/master/tools for reference
 # Return status: Done and Fail
-def check_status(operation_id, sec):
+def check_status(operation_id):
+    print("check "+operation_id+"...")
     cmd = "gcloud alpha genomics operations describe "+operation_id+" --format='value(done)'" 
     cmd2 = "gcloud alpha genomics operations describe "+operation_id+" --format='value(error)'"
     status = subprocess.check_output(cmd, shell=True, universal_newlines=True).splitlines()[0]
     if status == "False":
-        time.sleep(sec)
+        print("Work is not complete. Will check after 300 seconds")
+        time.sleep(300)
         status = subprocess.check_output(cmd, shell=True, universal_newlines=True).splitlines()[0]
     else:
+        print("Work is complete. Check if the task is successful...")
         done = subprocess.check_output(cmd2, shell=True, universal_newlines=True).splitlines()[0]
         if done == "-":
+            print("Done")
             return "Done"
         else:
+            print("Fail")
             return "Fail"
 
 
@@ -85,5 +90,6 @@ Please type Y for YES or N for NO.
 #CMD_DICT = cmd_from_manifest(sys.argv[1])
 #print (CMD_DICT)
 
-check_status("EO_koavTLBiyiuPkg5itowsggsbm6-geKg9wcm9kdWN0aW9uUXVldWU", 300)
+check="EO_koavTLBiyiuPkg5itowsggsbm6-geKg9wcm9kdWN0aW9uUXVldWU"
+check_status(check)
 ##gcloud alpha genomics operations describe EO_koavTLBiyiuPkg5itowsggsbm6-geKg9wcm9kdWN0aW9uUXVldWU --format='value(done)'
