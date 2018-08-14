@@ -46,41 +46,54 @@ def build_table(path_to_manifest):
 # Launch VM and get operation id from stderr
 def get_operation_id(row):
     cmd = row["cmd"]
+    print("Launching "+cmd)
     operation_id = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT, universal_newlines=True).splitlines()[0].split("/")[1].strip("].")
+    print("Operation ID for this launching VM is "+operation_id)
     return operation_id
 
 # Take https://github.com/googlegenomics/pipelines-api-examples/tree/master/tools for reference
 # Return status: Done and Fail
-def check_status(operation_id):
+def check_status(row):
+    operation_id = row["operation_id"]
     print("check "+operation_id+"...")
     cmd = "gcloud alpha genomics operations describe "+operation_id+" --format='value(done)'" 
     cmd2 = "gcloud alpha genomics operations describe "+operation_id+" --format='value(error)'"
     status = subprocess.check_output(cmd, shell=True, universal_newlines=True).splitlines()[0]
-    if status == "False":
-        print("Work is not complete. Will check after 300 seconds")
+    while status == "False":
+        print(operation_id+" is not complete. Will check after 300 seconds")
         time.sleep(300)
         status = subprocess.check_output(cmd, shell=True, universal_newlines=True).splitlines()[0]
     else:
-        print("Work is complete. Check if the task is successful...")
+        print(operation_id+" is complete. Check if the task is successful...")
         done = subprocess.check_output(cmd2, shell=True, universal_newlines=True).splitlines()[0]
         if done == "-":
-            print("Done")
+            print(operation_id+" is successfully done")
             return "Done"
         else:
-            print("Fail")
+            print(operation_id+" is failed")
             return "Fail"
 
+
+
+
 RESULT_TSV = build_table(sys.argv[1])
+RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
 UNDONE_LIST = RESULT_TSV[RESULT_TSV["status"]!="Done"]["case_full_barcode"].tolist()
+
 
 while len(UNDONE_LIST) !=0:
     ## Generate a smaller tsv for task to run
     WORKING_LIST = UNDONE_LIST[:25]
     WORKING_TSV = RESULT_TSV[RESULT_TSV["case_full_barcode"].isin(WORKING_LIST)]
+    ## Luanch VM and get operation ID
     WORKING_TSV["operation_id"] = WORKING_TSV.apply(get_operation_id, axis=1)
     WORKING_TSV["status"] = "Running"
-    print(WORKING_TSV)
-
-
-
-##gcloud alpha genomics operations describe EO_koavTLBiyiuPkg5itowsggsbm6-geKg9wcm9kdWN0aW9uUXVldWU --format='value(done)'
+    ## Check the status until task is complete
+    WORKING_TSV["status"] = WORKING_TSV.apply(check_status, axis=1)
+    ## Update the result table
+    RESULT_TSV.update(WORKING_TSV)
+    RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
+    ## Generate a new undone_list based on the status 
+    UNDONE_LIST = RESULT_TSV[RESULT_TSV["status"]!="Done"]["case_full_barcode"].tolist()
+else:
+    RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
