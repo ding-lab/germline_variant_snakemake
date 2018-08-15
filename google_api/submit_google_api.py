@@ -61,10 +61,9 @@ def check_status(row):
     cmd = "gcloud alpha genomics operations describe "+operation_id+" --format='value(done)'" 
     cmd2 = "gcloud alpha genomics operations describe "+operation_id+" --format='value(error)'"
     status = subprocess.check_output(cmd, shell=True, universal_newlines=True).splitlines()[0]
-    while status == "False":
-        print("case "+case+" : "+operation_id+" is not complete.")
-        status = subprocess.check_output(cmd, shell=True, universal_newlines=True).splitlines()[0]
-        continue
+    if status == "False":
+        print("case "+case+" : "+operation_id+" is running.")
+        return "Running"
     else:
         print("case "+case+" : "+operation_id+" is complete. Check if the task is successful...")
         done = subprocess.check_output(cmd2, shell=True, universal_newlines=True).splitlines()[0]
@@ -79,7 +78,7 @@ def check_status(row):
 RESULT_TSV = build_table(sys.argv[1])
 RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
 UNDONE_LIST = RESULT_TSV[RESULT_TSV["status"]!="Done"]["case_full_barcode"].tolist()
-
+print("There are "+len(UNDONE_LISt)+" samples to work on.")
 
 while len(UNDONE_LIST) !=0:
     ## Generate a smaller tsv for task to run
@@ -95,5 +94,7 @@ while len(UNDONE_LIST) !=0:
     RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
     ## Generate a new undone_list based on the status 
     UNDONE_LIST = RESULT_TSV[RESULT_TSV["status"]!="Done"]["case_full_barcode"].tolist()
+    print("There are "+len(UNDONE_LISt)+" samples to work on.")
+    time.sleep(300)
 else:
     RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
