@@ -144,7 +144,7 @@ pindel.filter.germline.max_num_homopolymer_repeat_units = 6")
 
 rule filter_pindel:
     input: 
-        config_file="pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt"
+        config_file="pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt",
         raw="{BUCKET}/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw"
     output: "{BUCKET}/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf"
     params: 
