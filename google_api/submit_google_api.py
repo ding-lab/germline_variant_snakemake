@@ -15,7 +15,6 @@ header = ["case", "case_16_barcode", "case_full_barcode", "sample_type_num", "sa
 
 # Read sample manifest and create a table
 def build_table(path_to_manifest):
-    passvalue = str(path_to_manifest).split(".")[1]
     cmd = "gcloud alpha genomics pipelines run --pipeline-file ~/germline_variant_snakemake/google_api/germline_snakemake.yaml --project washu-medicine-pancan --preemptible --inputs fafile="
     bucket = "gs://wliang/germline_snakemake/"
 
@@ -28,11 +27,11 @@ def build_table(path_to_manifest):
     df["dict"] = df["gspath_to_ref"].str.split(".").str[0]+".dict"
 
     # Assign bucket
-    df["log"] = bucket+"logging/"+passvalue+"/"+df["case_full_barcode"]
-    df["output"] = bucket+"output/"+passvalue+"/"+df["case_full_barcode"]
+    df["log"] = bucket+"logging/"+df["pass"]+"/"+df["case_full_barcode"]
+    df["output"] = bucket+"output/"+df["pass"]+"/"+df["case_full_barcode"]
 
     # Get the full commend
-    df["cmd"] = cmd+df["gspath_to_ref"]+",faifile="+df["gspath_to_ref"]+".fai,dictfile="+df["dict"]+",bamfile="+df["gspath_to_bam"]+",baifile="+df["gspath_to_bai"]+",sample="+df["case_full_barcode"]+" --logging "+df["log"]+" --outputs outputPath="+df["output"]
+    df["cmd"] = cmd+df["gspath_to_ref"]+",faifile="+df["gspath_to_ref"]+".fai,dictfile="+df["dict"]+",bamfile="+df["gspath_to_bam"]+",baifile="+df["gspath_to_bai"]+",sample="+df["case_full_barcode"]+",passvalue="+df["pass"]+" --logging "+df["log"]+" --outputs outputPath="+df["output"]
 
     # build table
     d = df[["case_full_barcode","cmd"]]

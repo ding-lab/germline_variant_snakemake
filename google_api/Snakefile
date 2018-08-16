@@ -3,6 +3,9 @@
 import os
 import pandas as pd
 from pathlib import Path
+from snakemake.remote.GS import RemoteProvider as GSRemoteProvider
+GS = GSRemoteProvider()
+
 
 configfile: "/home/germline_variant_snakemake/google_api/config.yaml"
 
@@ -14,8 +17,10 @@ CHR.append("Y")
 ### Get BAM path and sample id from config file
 
 SAMPLE = pd.read_table(config["samples"])["sample"].drop_duplicates().tolist()
+PASS = pd.read_table(config["samples"])["pass"].drop_duplicates().tolist()
 REF_DICT = pd.read_table(config["samples"])[["sample","reference"]].drop_duplicates().set_index("sample")["reference"].to_dict()
 FILE_DICT = pd.read_table(config["samples"])[["sample","bampath"]].drop_duplicates().set_index("sample")["bampath"].to_dict()
+BUCKET = config["bucket"]+"/"+PASS[0]+"/"+SAMPLE[0]
 
 
 ### Run GATK HaplotypeCaller and Select Variant

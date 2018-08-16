@@ -1,3 +1,4 @@
-samples: sample.txt
+smples: sample.txt
 interval_prefix: "/home/germline_variant_snakemake/files/interval_chr"
 path_to_pindel2vcf: "/opt/conda/bin/pindel2vcf"
+bucket: "wliang/germline_snakemake/output/"
