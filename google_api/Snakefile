@@ -29,33 +29,33 @@ rule gatk_haplotypecaller:
         genome_fa = lambda wildcards: REF_DICT[wildcards.sample],
         bam = lambda wildcards: FILE_DICT[wildcards.sample],
         interval = f"{INTERVALPREFIX}{{ix}}.list"
-    output: BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf"
+    output: GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf")
     log: "logs/{sample}.gatk.haplotypecaller.chr{ix}.log"
     shell: "gatk HaplotypeCaller -R {input.genome_fa} -I {input.bam} -L {input.interval} -O {output} --standard-min-confidence-threshold-for-calling 30.0 2>{log}"
 
 rule gatk_selectvariant_snp:
     input:
         genome_fa = lambda wildcards: REF_DICT[wildcards.sample],
-        input_vcf = BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf"
-    output: BUCKET + "/{sample}.gatk.snp.chr{ix}.vcf"
+        input_vcf = GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf")
+    output: GS.remote(BUCKET + "/{sample}.gatk.snp.chr{ix}.vcf")
     log: "logs/{sample}.gatk.selectsnp.chr{ix}.log"
     shell: "gatk SelectVariants -R {input.genome_fa} -V {input.input_vcf} -O {output} -select-type SNP -select-type MNP 2>{log}"
 
 rule gatk_selectvariant_indel:
     input:
         genome_fa = lambda wildcards: REF_DICT[wildcards.sample],
-        input_vcf = BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf"
-    output: BUCKET + "/{sample}.gatk.indel.chr{ix}.vcf"
+        input_vcf = GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf")
+    output: GS.remote(BUCKET + "/{sample}.gatk.indel.chr{ix}.vcf")
     log: "logs/{sample}.gatk.selectindel.chr{ix}.log"
     shell: "gatk SelectVariants -R {input.genome_fa} -V {input.input_vcf} -O {output} -select-type INDEL 2>{log}"
 
 rule gatk_merge_snp_vcf:
-    input: calls= expand('/{{sample}}.gatk.snp.chr{ix}.vcf', ix=CHR)
+    input: GS.remote(expand('/{{sample}}.gatk.snp.chr{ix}.vcf', ix=CHR))
     output: "{sample}.gatk.snp.vcf"
     shell: "bcftools concat -o {output} {input}"
 
 rule gatk_merge_indel_vcf:
-    input: calls= expand('/{{sample}}.gatk.indel.chr{ix}.vcf', ix=CHR)
+    input: GS.remote(expand('/{{sample}}.gatk.indel.chr{ix}.vcf', ix=CHR))
     output: "{sample}.gatk.indel.vcf"
     shell: "bcftools concat -o {output} {input}"
 
@@ -64,7 +64,7 @@ rule varscan_mpileup2snp:
     input:
          genome_fa = lambda wildcards: REF_DICT[wildcards.sample],
          bam = lambda wildcards: FILE_DICT[wildcards.sample]
-    output: BUCKET+"/{sample}.varscan.snp.chr{ix}.vcf"
+    output: GS.remote(BUCKET+"/{sample}.varscan.snp.chr{ix}.vcf")
     params: chr="{ix}"
     log: "logs/{sample}.varscan.snp.chr{ix}.log"
     shell: "samtools mpileup -q 1 -Q 13 -f {input.genome_fa} -r {params.chr} {input.bam} | varscan mpileup2snp - --min-coverage 3 --min-var-freq 0.10 --p-value 0.10 --strand-filter 1 --output-vcf 1 > {output} 2>{log}"
@@ -73,28 +73,28 @@ rule varscan_mpileup2indel:
     input:
          genome_fa = lambda wildcards: REF_DICT[wildcards.sample],
          bam = lambda wildcards: FILE_DICT[wildcards.sample]
-    output: BUCKET+"/{sample}.varscan.indel.chr{ix}.vcf"
+    output: GS.remote(BUCKET+"/{sample}.varscan.indel.chr{ix}.vcf")
     params: chr="{ix}"
     log: "logs/{sample}.varscan.snp.chr{ix}.log"
     shell: "samtools mpileup -q 1 -Q 13 -f {input.genome_fa} -r {params.chr} {input.bam} | varscan mpileup2indel - --min-coverage 3 --min-var-freq 0.10 --p-value 0.10 --strand-filter 1 --output-vcf 1 > {output} 2>{log}"
 
 rule varscan_snp_index:
-    input: BUCKET+"/{sample}.varscan.snp.chr{ix}.vcf"
-    output: BUCKET+"/{sample}.varscan.snp.chr{ix}.vcf.gz"
+    input: GS.remote(BUCKET+"/{sample}.varscan.snp.chr{ix}.vcf")
+    output: GS.remote(BUCKET+"/{sample}.varscan.snp.chr{ix}.vcf.gz")
     shell: "bcftools view {input} -Oz -o {output}; bcftools index {output}"
 
 rule varscan_indel_index:
-    input: BUCKET+"/{sample}.varscan.indel.chr{ix}.vcf"
-    output: BUCKET+"/{sample}.varscan.indel.chr{ix}.vcf.gz"
+    input: GS.remote(BUCKET+"/{sample}.varscan.indel.chr{ix}.vcf")
+    output: GS.remote(BUCKET+"/{sample}.varscan.indel.chr{ix}.vcf.gz")
     shell: "bcftools view {input} -Oz -o {output}; bcftools index {output}"
 
 rule varscan_merge_snp_vcf:
-    input: calls= expand(BUCKET+'/{{sample}}.varscan.snp.chr{ix}.vcf.gz', ix=CHR)
+    input: GS.remote(expand(BUCKET+'/{{sample}}.varscan.snp.chr{ix}.vcf.gz', ix=CHR))
     output: "/{sample}.varscan.snp.vcf"
     shell: "bcftools concat -o {output} {input}"
 
 rule varscan_merge_indel_vcf:
-    input: calls= expand(BUCKET+'/{{sample}}.varscan.indel.chr{ix}.vcf.gz', ix=CHR)
+    input: GS.remote(expand(BUCKET+'/{{sample}}.varscan.indel.chr{ix}.vcf.gz', ix=CHR))
     output: "/{sample}.varscan.indel.vcf"
     shell: "bcftools concat -o {output} {input}"
 
