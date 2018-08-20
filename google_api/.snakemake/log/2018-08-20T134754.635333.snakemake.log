@@ -1,3 +1,0 @@
-NameError in line 159 of /diskmnt/Projects/Users/wliang/Germline_Noncoding/08_Snakemake/google_api/Snakefile:
-name 'BUCEKT' is not defined
-  File "/diskmnt/Projects/Users/wliang/Germline_Noncoding/08_Snakemake/google_api/Snakefile", line 159, in <module>

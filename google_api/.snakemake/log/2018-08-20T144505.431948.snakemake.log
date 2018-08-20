@@ -1,4 +1,0 @@
-TypeError in line 29 of /diskmnt/Projects/Users/wliang/Germline_Noncoding/08_Snakemake/google_api/Snakefile:
-'function' object is not iterable
-  File "/diskmnt/Projects/Users/wliang/Germline_Noncoding/08_Snakemake/google_api/Snakefile", line 29, in <module>
-  File "/diskmnt/Projects/Users/wliang/miniconda3/envs/snakemake/lib/python3.6/site-packages/snakemake/remote/__init__.py", line 84, in remote

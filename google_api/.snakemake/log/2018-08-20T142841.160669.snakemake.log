@@ -1,5 +1,0 @@
-Building DAG of jobs...
-MissingInputException in line 102 of /diskmnt/Projects/Users/wliang/Germline_Noncoding/08_Snakemake/google_api/Snakefile:
-Missing input files for rule pindel_call:
-diskmnt/Datasets/TCGA/example_BAM/TCGA-73-4677-11A-01D-1203-02_IlluminaHiSeq-DNASeq_whole.bam
-diskmnt/Datasets/Reference/human_genome/GRCh37-lite/GRCh37-lite.fa
