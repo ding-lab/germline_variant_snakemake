@@ -1,0 +1,3 @@
+Building DAG of jobs...
+CyclicGraphException in line 118 of /diskmnt/Projects/Users/wliang/Germline_Noncoding/08_Snakemake/google_api/Snakefile:
+Cyclic dependency on rule pindel_filter_config.

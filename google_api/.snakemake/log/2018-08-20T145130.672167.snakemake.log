@@ -1,0 +1,4 @@
+Building DAG of jobs...
+MissingInputException in line 146 of /diskmnt/Projects/Users/wliang/Germline_Noncoding/08_Snakemake/google_api/Snakefile:
+Missing input files for rule filter_pindel:
+wliang/germline_snakemake/output/LowPass/TCGA-73-4677-11A-01D-1203-02/pindel/chr8/TCGA-73-4677-11A-01D-1203-02.pindel.input.chr8.txt

@@ -6,7 +6,6 @@ from pathlib import Path
 from snakemake.remote.GS import RemoteProvider as GSRemoteProvider
 GS = GSRemoteProvider()
 
-
 configfile: "/home/germline_variant_snakemake/google_api/config.yaml"
 
 INTERVALPREFIX = config["interval_prefix"]
@@ -16,18 +15,18 @@ CHR.append("Y")
 
 ### Get BAM path and sample id from config file
 
-SAMPLE = pd.read_table(config["samples"])["sample"].drop_duplicates().tolist()
+SAMPLE = pd.read_table(config["samples"]).iloc[0]["sample"]
 BUCKET = pd.read_table(config["samples"]).iloc[0]["bucket"]
-REF_DICT = pd.read_table(config["samples"])[["sample","reference"]].drop_duplicates().set_index("sample")["reference"].to_dict()
-FILE_DICT = pd.read_table(config["samples"])[["sample","bampath"]].drop_duplicates().set_index("sample")["bampath"].to_dict()
-
+REF = pd.read_table(config["samples"]).iloc[0]["reference"]
+BAM = pd.read_table(config["samples"]).iloc[0]["bampath"]
+print(SAMPLE, BUCKET, REF, BAM, BAM.split("/")[-1])
 
 
 ### Run GATK HaplotypeCaller and Select Variant
 rule gatk_haplotypecaller:
     input: 
-        genome_fa = lambda wildcards: REF_DICT[wildcards.sample],
-        bam = lambda wildcards: FILE_DICT[wildcards.sample],
+        genome_fa = REF,
+        bam = BAM,
         interval = f"{INTERVALPREFIX}{{ix}}.list"
     output: GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf")
     log: "logs/{sample}.gatk.haplotypecaller.chr{ix}.log"
@@ -35,7 +34,7 @@ rule gatk_haplotypecaller:
 
 rule gatk_selectvariant_snp:
     input:
-        genome_fa = lambda wildcards: REF_DICT[wildcards.sample],
+        genome_fa = REF,
         input_vcf = GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf")
     output: GS.remote(BUCKET + "/{sample}.gatk.snp.chr{ix}.vcf")
     log: "logs/{sample}.gatk.selectsnp.chr{ix}.log"
@@ -43,27 +42,27 @@ rule gatk_selectvariant_snp:
 
 rule gatk_selectvariant_indel:
     input:
-        genome_fa = lambda wildcards: REF_DICT[wildcards.sample],
+        genome_fa = REF,
         input_vcf = GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf")
     output: GS.remote(BUCKET + "/{sample}.gatk.indel.chr{ix}.vcf")
     log: "logs/{sample}.gatk.selectindel.chr{ix}.log"
     shell: "gatk SelectVariants -R {input.genome_fa} -V {input.input_vcf} -O {output} -select-type INDEL 2>{log}"
 
 rule gatk_merge_snp_vcf:
-    input: GS.remote(expand('/{{sample}}.gatk.snp.chr{ix}.vcf', ix=CHR))
+    input: GS.remote(expand(BUCKET+'/{{sample}}.gatk.snp.chr{ix}.vcf', ix=CHR))
     output: "{sample}.gatk.snp.vcf"
     shell: "bcftools concat -o {output} {input}"
 
 rule gatk_merge_indel_vcf:
-    input: GS.remote(expand('/{{sample}}.gatk.indel.chr{ix}.vcf', ix=CHR))
+    input: GS.remote(expand(BUCKET+'/{{sample}}.gatk.indel.chr{ix}.vcf', ix=CHR))
     output: "{sample}.gatk.indel.vcf"
     shell: "bcftools concat -o {output} {input}"
 
 ###Run Varscan
 rule varscan_mpileup2snp:
     input:
-         genome_fa = lambda wildcards: REF_DICT[wildcards.sample],
-         bam = lambda wildcards: FILE_DICT[wildcards.sample]
+         genome_fa = REF,
+         bam = BAM
     output: GS.remote(BUCKET+"/{sample}.varscan.snp.chr{ix}.vcf")
     params: chr="{ix}"
     log: "logs/{sample}.varscan.snp.chr{ix}.log"
@@ -71,8 +70,8 @@ rule varscan_mpileup2snp:
 
 rule varscan_mpileup2indel:
     input:
-         genome_fa = lambda wildcards: REF_DICT[wildcards.sample],
-         bam = lambda wildcards: FILE_DICT[wildcards.sample]
+         genome_fa = REF,
+         bam = BAM
     output: GS.remote(BUCKET+"/{sample}.varscan.indel.chr{ix}.vcf")
     params: chr="{ix}"
     log: "logs/{sample}.varscan.snp.chr{ix}.log"
@@ -80,56 +79,66 @@ rule varscan_mpileup2indel:
 
 rule varscan_snp_index:
     input: GS.remote(BUCKET+"/{sample}.varscan.snp.chr{ix}.vcf")
-    output: GS.remote(BUCKET+"/{sample}.varscan.snp.chr{ix}.vcf.gz")
+    output: "{sample}.varscan.snp.chr{ix}.vcf.gz"
     shell: "bcftools view {input} -Oz -o {output}; bcftools index {output}"
 
 rule varscan_indel_index:
     input: GS.remote(BUCKET+"/{sample}.varscan.indel.chr{ix}.vcf")
-    output: GS.remote(BUCKET+"/{sample}.varscan.indel.chr{ix}.vcf.gz")
+    output: "{sample}.varscan.indel.chr{ix}.vcf.gz"
     shell: "bcftools view {input} -Oz -o {output}; bcftools index {output}"
 
 rule varscan_merge_snp_vcf:
-    input: GS.remote(expand(BUCKET+'/{{sample}}.varscan.snp.chr{ix}.vcf.gz', ix=CHR))
-    output: "/{sample}.varscan.snp.vcf"
+    input: expand('{{sample}}.varscan.snp.chr{ix}.vcf.gz', ix=CHR)
+    output: "{sample}.varscan.snp.vcf"
     shell: "bcftools concat -o {output} {input}"
 
 rule varscan_merge_indel_vcf:
-    input: GS.remote(expand(BUCKET+'/{{sample}}.varscan.indel.chr{ix}.vcf.gz', ix=CHR))
-    output: "/{sample}.varscan.indel.vcf"
+    input: expand('{{sample}}.varscan.indel.chr{ix}.vcf.gz', ix=CHR)
+    output: "{sample}.varscan.indel.vcf"
     shell: "bcftools concat -o {output} {input}"
 
 ###Run Pindel
+rule pindel_config:
+    output: GS.remote(BUCKET+"/"+SAMPLE+".pindel_config.txt")
+    run:
+        filename= BUCKET+"/"+SAMPLE+".pindel_config..txt"
+        with open(filename, "w") as f1:
+            f1.write(BAM.split("/")[-1], "500", SAMPLE)
+
 rule pindel_call:
     input:
-        ref = lambda wildcards: REF_DICT[wildcards.sample],
-        samples = lambda wildcards: FILE_DICT[wildcards.sample]
-    output: "/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw"
+        ref = REF,
+        samples = BAM,
+        config = GS.remote(BUCKET+"/"+SAMPLE+".pindel_config.txt")
+    output: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw")
     params:
-        prefix= "pindel/chr{ix}/{sample}.chr{ix}",
+        prefix= BUCKET+"/pindel/chr{ix}/{sample}.chr{ix}",
         extra="-x 4 -w 0.1 -B 0 -M 3 -J /home/germline_variant_snakemake/files/pindel-centromere-exclude.bed -c {ix}",
         chr="{ix}",
         sample="{sample}",
     log: "logs/{sample}.pindel.chr{ix}.log"
     threads: 4
-    shell: "pindel {params.extra} -T {threads} -f {input.ref} -i {params.sample}.pindel_config.txt -o {params.prefix} -L {log}; cat pindel/chr{params.chr}/{params.sample}.chr{params.chr}_D pindel/chr{params.chr}/{params.sample}.chr{params.chr}_INV pindel/chr{params.chr}/{params.sample}.chr{params.chr}_TD pindel/chr{params.chr}/{params.sample}.chr{params.chr}_SI | grep ChrID > {output}"
+    shell: "pindel {params.extra} -T {threads} -f {input.ref} -i {input.config} -o {params.prefix} -L {log}; cat {params.prefix}_D {params.prefix}_INV {params.prefix}_TD {params.prefix}_SI | grep ChrID > {output}"
 
 #Generate the config file for pindel_filter.v0.5.pl
 
 rule pindel_filter_config:
-    input: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw"
-    output: "pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt"
+    input: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw")
+    output: 
+        GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt")
     params: 
         sample="{sample}",
         chr="{ix}",
-        ref_file = lambda wildcards: str(REF_DICT[wildcards.sample]).split("/")[-1],
-        path2pindel2vcf = config["path_to_pindel2vcf"]
+        ref_file = REF,
+        path2pindel2vcf = config["path_to_pindel2vcf"],
+        bucket = BUCKET
     run:
         for ix in CHR:
-            filename=f"pindel/chr{params.chr}/{params.sample}.pindel.input.chr{params.chr}.txt"
+            filename= BUCKET+"/pindel/chr{params.chr}/{params.sample}.pindel.input.chr{params.chr}.txt"
             with open(filename, "w") as f:
                 f.write ( \
 f"pindel.filter.pindel2vcf = {params.path2pindel2vcf}\n\
-pindel.filter.variants_file = /mnt/data/pindel/chr{params.chr}/{params.sample}.pindel.out.chr{params.chr}.raw\n\
+pindel.filter.variants_file = /mnt/data/input/{params.bucket}/pindel/chr{params.chr}/{params.sample}.pindel.out.chr{params.chr}.raw\n\
 pindel.filter.REF = /mnt/data/input/{params.ref_file}\n\
 pindel.filter.date = 000000\n\
 pindel.filter.heterozyg_min_var_allele_freq = 0.2\n\
@@ -144,21 +153,21 @@ pindel.filter.germline.max_num_homopolymer_repeat_units = 6")
 
 rule filter_pindel:
     input: 
-        config_file="pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt",
-        raw="pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw"
-    output: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf"
+        config_file=GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt"),
+        raw=GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw")
+    output: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf")
     params: 
         chr='{ix}',
         sample='{sample}'
     shell: "perl /home/germline_variant_snakemake/scripts/pindel_filter.v0.5.pl {input.config_file}"
 
 rule index_pindel:
-    input: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf"
+    input: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf")
     output: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf.gz"
     shell: 'bcftools view {input} -Oz -o {output}; bcftools index {output}'
 
 rule pindel_merge_vcf:
-    input: calls=expand("pindel/chr{ix}/{{sample}}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf.gz", ix=CHR)
+    input: expand("pindel/chr{ix}/{{sample}}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf.gz", ix=CHR)
     output: "{sample}.pindel.vcf"
     shell: "bcftools concat -o {output} {input}"
 

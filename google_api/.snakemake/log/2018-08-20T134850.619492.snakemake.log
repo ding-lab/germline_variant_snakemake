@@ -1,0 +1,4 @@
+Building DAG of jobs...
+WildcardError in line 162 of /diskmnt/Projects/Users/wliang/Germline_Noncoding/08_Snakemake/google_api/Snakefile:
+Wildcards in input files cannot be determined from output files:
+'ix'

@@ -1,0 +1,5 @@
+Building DAG of jobs...
+MissingInputException in line 177 of /diskmnt/Projects/Users/wliang/Germline_Noncoding/08_Snakemake/google_api/Snakefile:
+Missing input files for rule filter:
+TCGA-73-4677-11A-01D-1203-02.varscan.indel.vcf
+TCGA-73-4677-11A-01D-1203-02.varscan.snp.vcf
