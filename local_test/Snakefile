@@ -17,7 +17,6 @@ SAMPLE = pd.read_table(config["samples"])["sample"].drop_duplicates().tolist()
 REF_DICT = pd.read_table(config["samples"])[["sample","reference"]].drop_duplicates().set_index("sample")["reference"].to_dict()
 FILE_DICT = pd.read_table(config["samples"])[["sample","bampath"]].drop_duplicates().set_index("sample")["bampath"].to_dict()
 
-
 ### Run GATK HaplotypeCaller and Select Variant
 rule gatk_haplotypecaller:
     input: 
