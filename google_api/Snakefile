@@ -17,10 +17,10 @@ CHR.append("Y")
 ### Get BAM path and sample id from config file
 
 SAMPLE = pd.read_table(config["samples"])["sample"].drop_duplicates().tolist()
-PASS = pd.read_table(config["samples"])["pass"].drop_duplicates().tolist()
+BUCKET = pd.read_table(config["samples"]).iloc[0]["bucket"]
 REF_DICT = pd.read_table(config["samples"])[["sample","reference"]].drop_duplicates().set_index("sample")["reference"].to_dict()
 FILE_DICT = pd.read_table(config["samples"])[["sample","bampath"]].drop_duplicates().set_index("sample")["bampath"].to_dict()
-BUCKET = config["bucket"]+"/"+PASS[0]+"/"+SAMPLE[0]+"/temp"
+
 
 
 ### Run GATK HaplotypeCaller and Select Variant
