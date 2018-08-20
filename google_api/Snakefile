@@ -139,7 +139,7 @@ rule pindel_filter_config:
                 f.write ( \
 f"pindel.filter.pindel2vcf = {params.path2pindel2vcf}\n\
 pindel.filter.variants_file = /mnt/data/input/{params.bucket}/pindel/chr{params.chr}/{params.sample}.pindel.out.chr{params.chr}.raw\n\
-pindel.filter.REF = /mnt/data/input/{params.ref_file}\n\
+pindel.filter.REF = {params.ref_file}\n\
 pindel.filter.date = 000000\n\
 pindel.filter.heterozyg_min_var_allele_freq = 0.2\n\
 pindel.filter.homozyg_min_var_allele_freq = 0.8\n\
