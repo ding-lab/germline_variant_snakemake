@@ -4,7 +4,7 @@ import os
 import pandas as pd
 from pathlib import Path
 from snakemake.remote.GS import RemoteProvider as GSRemoteProvider
-GS = GSRemoteProvider(keep_local=True)
+GS = GSRemoteProvider()
 
 configfile: "/home/germline_variant_snakemake/google_api/config.yaml"
 

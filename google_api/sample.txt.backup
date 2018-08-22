@@ -1,2 +1,0 @@
-sample	reference	bampath	bucket
-TCGA-05-4418-10A-01D-1203-02	ding_lab_reference/GRCh37-lite.fa	5aa919de-0aa0-43ec-9ec3-288481102b6d/tcga/LUAD/DNA/WGS/HMS-RK/ILLUMINA/TCGA-05-4418-10A-01D-1203-02_IlluminaHiSeq-DNASeq_whole.bam	wliang/germline_snakemake/output/LowPass/TCGA-05-4418-10A-01D-1203-0	
