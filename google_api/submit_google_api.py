@@ -76,7 +76,7 @@ def check_status(row):
 
 RESULT_TSV = build_table(sys.argv[1])
 RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
-UNDONE_LIST = RESULT_TSV[(RESULT_TSV["status"]!="Done") & (RESULT_TSV["num_of_repeats"]<=5)]["case_full_barcode"].tolist()
+UNDONE_LIST = RESULT_TSV[(RESULT_TSV["status"]!="Done") & (RESULT_TSV["num_of_repeats"]<=15)]["case_full_barcode"].tolist()
 print("There are "+str(len(UNDONE_LIST))+" samples to work on.")
 
 while len(UNDONE_LIST) !=0:
@@ -97,7 +97,7 @@ while len(UNDONE_LIST) !=0:
         RESULT_TSV.update(CHECKING_TSV)
     RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
     ## Generate a new undone_list based on the status 
-    UNDONE_LIST = RESULT_TSV[(RESULT_TSV["status"]!="Done") & (RESULT_TSV["num_of_repeats"]<=5)]["case_full_barcode"].tolist()
+    UNDONE_LIST = RESULT_TSV[(RESULT_TSV["status"]!="Done") & (RESULT_TSV["num_of_repeats"]<=15)]["case_full_barcode"].tolist()
     print("There are "+str(len(UNDONE_LIST))+" samples to work on.")
     time.sleep(300)
 else:
