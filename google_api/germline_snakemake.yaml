@@ -36,7 +36,7 @@ docker:
     cd /mnt/data/input &&
     echo -e "sample\treference\tbampath\tbucket" > sample.txt &&
     echo -e "${sample}\t${fafile}\t${bamfile}\twliang/germline_snakemake/output/${passvalue}/${sample}" >> sample.txt &&
-    snakemake --snakefile /home/germline_variant_snakemake/google_api/Snakefile -j 48 -p all_tools --restart-times 10 --verbose --keep-remote &&
+    snakemake --snakefile /home/germline_variant_snakemake/google_api/Snakefile -j 48 -p all_tools --restart-times 10 --verbose --keep-remote --default-remote-provider GS &&
     cp ${sample}.*.filtered.vcf /mnt/data/output &&
     cp ${sample}.pindel.vcf /mnt/data/output
 
