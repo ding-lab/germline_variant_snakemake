@@ -31,9 +31,9 @@ docker:
   # The Pipelines API will create the input directory when localizing files,
   # but does not create the output directory.
   cmd: >
-    mkdir /mnt/data/output && 
-    find /mnt/data/input &&
-    cd /mnt/data/input &&
+    mkdir /mnt/datadisk/output && 
+    find /mnt/datadisk/input &&
+    cd /mnt/datadisk/input &&
     echo -e "sample\treference\tbampath\tbucket" > sample.txt &&
     echo -e "${sample}\t${fafile}\t${bamfile}\twliang/germline_snakemake/output/${passvalue}/${sample}" | awk -F "\t" '{OFS="\t"; l1=split($2, b, "/"); l2=split($3, c, "/"); print $1, "/mnt/data/input/"b[l1], "/mnt/data/input/"c[l2], $4}' >> sample.txt &&
     snakemake --snakefile /home/germline_variant_snakemake/google_api/Snakefile -j 48 -p all_tools --restart-times 10 --verbose --keep-remote &&
