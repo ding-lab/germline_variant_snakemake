@@ -27,11 +27,11 @@ BAI = BAM+".bai"
 ### Run GATK HaplotypeCaller and Select Variant
 rule gatk_haplotypecaller:
     input: 
-        genome_fa = GS.remote(REF),
-        genome_fai = GS.remote(FAI),
-        genome_dict = GS.remote(DICT),
-        bam = GS.remote(BAM),
-        bai = GS.remote(BAI),
+        genome_fa = REF,
+        genome_fai = FAI,
+        genome_dict = DICT,
+        bam = BAM,
+        bai = BAI,
         interval = f"{INTERVALPREFIX}{{ix}}.list"
     output: GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf")
     log: "logs/{sample}.gatk.haplotypecaller.chr{ix}.log"
@@ -39,9 +39,9 @@ rule gatk_haplotypecaller:
 
 rule gatk_selectvariant_snp:
     input:
-        genome_fa = GS.remote(REF),
-        genome_fai = GS.remote(FAI),
-        genome_dict = GS.remote(DICT),
+        genome_fa = REF,
+        genome_fai = FAI,
+        genome_dict = DICT,
         input_vcf = GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf")
     output: GS.remote(BUCKET + "/{sample}.gatk.snp.chr{ix}.vcf")
     log: "logs/{sample}.gatk.selectsnp.chr{ix}.log"
@@ -49,9 +49,9 @@ rule gatk_selectvariant_snp:
 
 rule gatk_selectvariant_indel:
     input:
-        genome_fa = GS.remote(REF),
-        genome_fai = GS.remote(FAI),
-        genome_dict = GS.remote(DICT),
+        genome_fa = REF,
+        genome_fai = FAI,
+        genome_dict = DICT,
         input_vcf = GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf")
     output: GS.remote(BUCKET + "/{sample}.gatk.indel.chr{ix}.vcf")
     log: "logs/{sample}.gatk.selectindel.chr{ix}.log"
@@ -73,11 +73,11 @@ rule test_gatk:
 ###Run Varscan
 rule varscan_mpileup2snp:
     input:
-         genome_fa = GS.remote(REF),
-         genome_fai = GS.remote(FAI),
-         genome_dict = GS.remote(DICT),
-         bam = GS.remote(BAM),
-         bai = GS.remote(BAI)
+         genome_fa = REF,
+         genome_fai = FAI,
+         genome_dict = DICT,
+         bam = BAM,
+         bai = BAI
     output: GS.remote(BUCKET+"/{sample}.varscan.snp.chr{ix}.vcf")
     params: chr="{ix}"
     log: "logs/{sample}.varscan.snp.chr{ix}.log"
@@ -85,11 +85,11 @@ rule varscan_mpileup2snp:
 
 rule varscan_mpileup2indel:
     input:
-         genome_fa = GS.remote(REF),
-         genome_fai = GS.remote(FAI),
-         genome_dict = GS.remote(DICT),
-         bam = GS.remote(BAM),
-         bai = GS.remote(BAI)
+         genome_fa = REF,
+         genome_fai = FAI,
+         genome_dict = DICT,
+         bam = BAM,
+         bai = BAI
     output: GS.remote(BUCKET+"/{sample}.varscan.indel.chr{ix}.vcf")
     params: chr="{ix}"
     log: "logs/{sample}.varscan.snp.chr{ix}.log"
@@ -125,10 +125,10 @@ rule pindel_config:
 
 rule pindel_call:
     input:
-        ref = GS.remote(REF),
-        genome_fai = GS.remote(FAI),  
-        samples = GS.remote(BAM),
-        bai = GS.remote(BAI),
+        ref = REF,
+        genome_fai = FAI,  
+        samples = BAM,
+        bai = BAI,
         config = GS.remote(BUCKET+"/"+SAMPLE+".pindel_config.txt")
     output: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw")
     params:
