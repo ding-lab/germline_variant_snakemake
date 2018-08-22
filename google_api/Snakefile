@@ -4,7 +4,7 @@ import os
 import pandas as pd
 from pathlib import Path
 from snakemake.remote.GS import RemoteProvider as GSRemoteProvider
-GS = GSRemoteProvider(keep_local=True)
+GS = GSRemoteProvider()
 
 configfile: "/home/germline_variant_snakemake/google_api/config.yaml"
 
@@ -27,11 +27,11 @@ BAI = BAM+".bai"
 ### Run GATK HaplotypeCaller and Select Variant
 rule gatk_haplotypecaller:
     input: 
-        genome_fa = GS.remote(REF),
-        genome_fai = GS.remote(FAI),
-        genome_dict = GS.remote(DICT),
-        bam = GS.remote(BAM),
-        bai = GS.remote(BAI),
+        genome_fa = GS.remote(REF, keep_local=True),
+        genome_fai = GS.remote(FAI, keep_local=True),
+        genome_dict = GS.remote(DICT, keep_local=True),
+        bam = GS.remote(BAM, keep_local=True),
+        bai = GS.remote(BAI, keep_local=True),
         interval = f"{INTERVALPREFIX}{{ix}}.list"
     output: GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf")
     log: "logs/{sample}.gatk.haplotypecaller.chr{ix}.log"
@@ -39,31 +39,31 @@ rule gatk_haplotypecaller:
 
 rule gatk_selectvariant_snp:
     input:
-        genome_fa = GS.remote(REF),
-        genome_fai = GS.remote(FAI),
-        genome_dict = GS.remote(DICT),
-        input_vcf = GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf")
+        genome_fa = GS.remote(REF, keep_local=True),
+        genome_fai = GS.remote(FAI, keep_local=True),
+        genome_dict = GS.remote(DICT, keep_local=True),
+        input_vcf = GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf", keep_local=True)
     output: GS.remote(BUCKET + "/{sample}.gatk.snp.chr{ix}.vcf")
     log: "logs/{sample}.gatk.selectsnp.chr{ix}.log"
     shell: "gatk SelectVariants -R {input.genome_fa} -V {input.input_vcf} -O {output} -select-type SNP -select-type MNP 2>{log}"
 
 rule gatk_selectvariant_indel:
     input:
-        genome_fa = GS.remote(REF),
-        genome_fai = GS.remote(FAI),
-        genome_dict = GS.remote(DICT),
-        input_vcf = GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf")
+        genome_fa = GS.remote(REF, keep_local=True),
+        genome_fai = GS.remote(FAI, keep_local=True),
+        genome_dict = GS.remote(DICT, keep_local=True),
+        input_vcf = GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf", keep_local=True)
     output: GS.remote(BUCKET + "/{sample}.gatk.indel.chr{ix}.vcf")
     log: "logs/{sample}.gatk.selectindel.chr{ix}.log"
     shell: "gatk SelectVariants -R {input.genome_fa} -V {input.input_vcf} -O {output} -select-type INDEL 2>{log}"
 
 rule gatk_merge_snp_vcf:
-    input: GS.remote(expand(BUCKET+'/{{sample}}.gatk.snp.chr{ix}.vcf', ix=CHR))
+    input: GS.remote(expand(BUCKET+'/{{sample}}.gatk.snp.chr{ix}.vcf', ix=CHR), keep_local=True)
     output: "{sample}.gatk.snp.vcf"
     shell: "bcftools concat -o {output} {input}"
 
 rule gatk_merge_indel_vcf:
-    input: GS.remote(expand(BUCKET+'/{{sample}}.gatk.indel.chr{ix}.vcf', ix=CHR))
+    input: GS.remote(expand(BUCKET+'/{{sample}}.gatk.indel.chr{ix}.vcf', ix=CHR), keep_local=True)
     output: "{sample}.gatk.indel.vcf"
     shell: "bcftools concat -o {output} {input}"
 
@@ -73,11 +73,11 @@ rule test_gatk:
 ###Run Varscan
 rule varscan_mpileup2snp:
     input:
-         genome_fa = GS.remote(REF),
-         genome_fai = GS.remote(FAI),
-         genome_dict = GS.remote(DICT),
-         bam = GS.remote(BAM),
-         bai = GS.remote(BAI)
+         genome_fa = GS.remote(REF, keep_local=True),
+         genome_fai = GS.remote(FAI, keep_local=True),
+         genome_dict = GS.remote(DICT, keep_local=True),
+         bam = GS.remote(BAM, keep_local=True),
+         bai = GS.remote(BAI, keep_local=True)
     output: GS.remote(BUCKET+"/{sample}.varscan.snp.chr{ix}.vcf")
     params: chr="{ix}"
     log: "logs/{sample}.varscan.snp.chr{ix}.log"
@@ -85,23 +85,23 @@ rule varscan_mpileup2snp:
 
 rule varscan_mpileup2indel:
     input:
-         genome_fa = GS.remote(REF),
-         genome_fai = GS.remote(FAI),
-         genome_dict = GS.remote(DICT),
-         bam = GS.remote(BAM),
-         bai = GS.remote(BAI)
+         genome_fa = GS.remote(REF, keep_local=True),
+         genome_fai = GS.remote(FAI, keep_local=True),
+         genome_dict = GS.remote(DICT, keep_local=True),
+         bam = GS.remote(BAM, keep_local=True),
+         bai = GS.remote(BAI, keep_local=True)
     output: GS.remote(BUCKET+"/{sample}.varscan.indel.chr{ix}.vcf")
     params: chr="{ix}"
     log: "logs/{sample}.varscan.snp.chr{ix}.log"
     shell: "samtools mpileup -q 1 -Q 13 -f {input.genome_fa} -r {params.chr} {input.bam} | varscan mpileup2indel - --min-coverage 3 --min-var-freq 0.10 --p-value 0.10 --strand-filter 1 --output-vcf 1 > {output} 2>{log}"
 
 rule varscan_snp_index:
-    input: GS.remote(BUCKET+"/{sample}.varscan.snp.chr{ix}.vcf")
+    input: GS.remote(BUCKET+"/{sample}.varscan.snp.chr{ix}.vcf", keep_local=True)
     output: "{sample}.varscan.snp.chr{ix}.vcf.gz"
     shell: "bcftools view {input} -Oz -o {output}; bcftools index {output}"
 
 rule varscan_indel_index:
-    input: GS.remote(BUCKET+"/{sample}.varscan.indel.chr{ix}.vcf")
+    input: GS.remote(BUCKET+"/{sample}.varscan.indel.chr{ix}.vcf", keep_local=True)
     output: "{sample}.varscan.indel.chr{ix}.vcf.gz"
     shell: "bcftools view {input} -Oz -o {output}; bcftools index {output}"
 
@@ -117,7 +117,7 @@ rule varscan_merge_indel_vcf:
 
 ###Run Pindel
 rule pindel_config:
-    output: GS.remote(BUCKET+"/"+SAMPLE+".pindel_config.txt")
+    output: GS.remote(BUCKET+"/"+SAMPLE+".pindel_config.txt", keep_local=True)
     run:
         filename= BUCKET+"/"+SAMPLE+".pindel_config..txt"
         with open(filename, "w") as f1:
@@ -125,11 +125,11 @@ rule pindel_config:
 
 rule pindel_call:
     input:
-        ref = GS.remote(REF),
-        genome_fai = GS.remote(FAI),  
-        samples = GS.remote(BAM),
-        bai = GS.remote(BAI),
-        config = GS.remote(BUCKET+"/"+SAMPLE+".pindel_config.txt")
+        ref = GS.remote(REF, keep_local=True),
+        genome_fai = GS.remote(FAI, keep_local=True),  
+        samples = GS.remote(BAM, keep_local=True),
+        bai = GS.remote(BAI, keep_local=True),
+        config = GS.remote(BUCKET+"/"+SAMPLE+".pindel_config.txt", keep_local=True)
     output: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw")
     params:
         prefix= BUCKET+"/pindel/chr{ix}/{sample}.chr{ix}",
@@ -143,7 +143,7 @@ rule pindel_call:
 #Generate the config file for pindel_filter.v0.5.pl
 
 rule pindel_filter_config:
-    input: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw")
+    input: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw", keep_local=True)
     output: 
         GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt")
     params: 
@@ -173,8 +173,8 @@ pindel.filter.germline.max_num_homopolymer_repeat_units = 6")
 
 rule filter_pindel:
     input: 
-        config_file=GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt"),
-        raw=GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw")
+        config_file=GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt", keep_local=True),
+        raw=GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw", keep_local=True)
     output: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf")
     params: 
         chr='{ix}',
@@ -182,7 +182,7 @@ rule filter_pindel:
     shell: "perl /home/germline_variant_snakemake/scripts/pindel_filter.v0.5.pl {input.config_file}"
 
 rule index_pindel:
-    input: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf")
+    input: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf", keep_local=True)
     output: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf.gz"
     shell: 'bcftools view {input} -Oz -o {output}; bcftools index {output}'
 
