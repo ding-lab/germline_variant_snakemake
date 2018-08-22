@@ -33,12 +33,9 @@ docker:
   cmd: >
     mkdir /mnt/data/output && 
     find /mnt/data/input &&
-    touch /mnt/data/input/*.fai &&
-    touch /mnt/data/input/*.dict &&
-    touch /mnt/data/input/*.bai &&
     cd /mnt/data/input &&
     echo -e "sample\treference\tbampath\tbucket" > sample.txt &&
-    echo -e "${sample}\t${fafile}\t${bamfile}\twliang/germline_snakemake/output/${passvalue}/${sample}/temp" | awk -F "\t" '{OFS="\t"; l1=split($2, b, "/"); l2=split($3, c, "/"); print $1, "/mnt/data/input/"b[l1], "/mnt/data/input/"c[l2], $4}' >> sample.txt &&
+    echo -e "${sample}\t${fafile}\t${bamfile}\twliang/germline_snakemake/output/${passvalue}/${sample}" | awk -F "\t" '{OFS="\t"; l1=split($2, b, "/"); l2=split($3, c, "/"); print $1, "/mnt/data/input/"b[l1], "/mnt/data/input/"c[l2], $4}' >> sample.txt &&
     snakemake --snakefile /home/germline_variant_snakemake/google_api/Snakefile -j 48 -p all_tools --restart-times 10 --verbose --keep-remote &&
     cp ${sample}.*.filtered.vcf /mnt/data/output &&
     cp ${sample}.pindel.vcf /mnt/data/output
@@ -49,29 +46,14 @@ docker:
 inputParameters:
 - name: fafile
   description: Cloud Storage path or pattern to input file(s)
-  localCopy:
-    path: input/
-    disk: datadisk
 - name: faifile
   description: Cloud Storage path or pattern to input files
-  localCopy:
-    path: input/
-    disk: datadisk
 - name: dictfile
   description: Cloud Storage path or pattern to input files
-  localCopy:
-    path: input/
-    disk: datadisk
 - name: bamfile
   description: Cloud Storage path
-  localCopy:
-    path: input/
-    disk: datadisk
 - name: baifile
   description: Cloud Storage path or pattern to input file(s)
-  localCopy:
-    path: input/
-    disk: datadisk
 - name: sample
   description: File names
 - name: fafile

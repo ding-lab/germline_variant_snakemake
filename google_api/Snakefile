@@ -22,7 +22,6 @@ BAM = pd.read_table(config["samples"]).iloc[0]["bampath"]
 DICT = REF.split(".")[0]+".dict"
 FAI = REF+".fai"
 BAI = BAM+".bai"
-print(SAMPLE, BUCKET, REF, BAM, BAM.split("/")[-1], DICT, FAI, BAI)
 
 
 ### Run GATK HaplotypeCaller and Select Variant
