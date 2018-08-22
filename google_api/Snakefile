@@ -68,6 +68,9 @@ rule gatk_merge_indel_vcf:
     output: "{sample}.gatk.indel.vcf"
     shell: "bcftools concat -o {output} {input}"
 
+rule test_gatk:
+    input: "TCGA-73-4677-11A-01D-1203-02.gatk.snp.vcf"
+
 ###Run Varscan
 rule varscan_mpileup2snp:
     input:
