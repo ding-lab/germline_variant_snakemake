@@ -27,11 +27,11 @@ BAI = BAM+".bai"
 ### Run GATK HaplotypeCaller and Select Variant
 rule gatk_haplotypecaller:
     input: 
-        genome_fa = ancient(GS.remote(REF)),
-        genome_fai = ancient(GS.remote(FAI)),
-        genome_dict = ancient(GS.remote(DICT)),
-        bam = ancient(GS.remote(BAM)),
-        bai = ancient(GS.remote(BAI)),
+        genome_fa = REF,
+        genome_fai = FAI,
+        genome_dict = DICT,
+        bam = BAM,
+        bai = BAI,
         interval = f"{INTERVALPREFIX}{{ix}}.list"
     output: GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf")
     log: GS.remote(BUCKET + "/logs/{sample}.gatk.haplotypecaller.chr{ix}.log")
@@ -39,31 +39,31 @@ rule gatk_haplotypecaller:
 
 rule gatk_selectvariant_snp:
     input:
-        genome_fa = ancient(GS.remote(REF)),
-        genome_fai = ancient(GS.remote(FAI)),
-        genome_dict = ancient(GS.remote(DICT)),
-        input_vcf = ancient(GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf"))
+        genome_fa = REF,
+        genome_fai = FAI,
+        genome_dict = DICT,
+        input_vcf = GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf")
     output: GS.remote(BUCKET + "/{sample}.gatk.snp.chr{ix}.vcf")
     log: GS.remote(BUCKET + "/logs/{sample}.gatk.selectsnp.chr{ix}.log")
     shell: "gatk SelectVariants -R {input.genome_fa} -V {input.input_vcf} -O {output} -select-type SNP -select-type MNP 2>{log}"
 
 rule gatk_selectvariant_indel:
     input:
-        genome_fa = ancient(GS.remote(REF)),
-        genome_fai = ancient(GS.remote(FAI)),
-        genome_dict = ancient(GS.remote(DICT)),
-        input_vcf = ancient(GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf"))
+        genome_fa = REF,
+        genome_fai = FAI,
+        genome_dict = DICT,
+        input_vcf = GS.remote(BUCKET + "/{sample}.gatk.raw.chr{ix}.vcf")
     output: GS.remote(BUCKET + "/{sample}.gatk.indel.chr{ix}.vcf")
     log: GS.remote(BUCKET + "/logs/{sample}.gatk.selectindel.chr{ix}.log")
     shell: "gatk SelectVariants -R {input.genome_fa} -V {input.input_vcf} -O {output} -select-type INDEL 2>{log}"
 
 rule gatk_merge_snp_vcf:
-    input: ancient(GS.remote(expand(BUCKET+'/{{sample}}.gatk.snp.chr{ix}.vcf', ix=CHR)))
+    input: GS.remote(expand(BUCKET+'/{{sample}}.gatk.snp.chr{ix}.vcf', ix=CHR))
     output: "{sample}.gatk.snp.vcf"
     shell: "bcftools concat -o {output} {input}"
 
 rule gatk_merge_indel_vcf:
-    input: ancient(GS.remote(expand(BUCKET+'/{{sample}}.gatk.indel.chr{ix}.vcf', ix=CHR)))
+    input: GS.remote(expand(BUCKET+'/{{sample}}.gatk.indel.chr{ix}.vcf', ix=CHR))
     output: "{sample}.gatk.indel.vcf"
     shell: "bcftools concat -o {output} {input}"
 
@@ -71,11 +71,11 @@ rule gatk_merge_indel_vcf:
 ###Run Varscan
 rule varscan_mpileup2snp:
     input:
-         genome_fa = ancient(GS.remote(REF)),
-         genome_fai = ancient(GS.remote(FAI)),
-         genome_dict = ancient(GS.remote(DICT)),
-         bam = ancient(GS.remote(BAM)),
-         bai = ancient(GS.remote(BAI))
+         genome_fa = REF,
+         genome_fai = FAI,
+         genome_dict = DICT,
+         bam = BAM,
+         bai = BAI
     output: GS.remote(BUCKET + "/{sample}.varscan.snp.chr{ix}.vcf")
     params: chr="{ix}"
     log: GS.remote(BUCKET + "/logs/{sample}.varscan.snp.chr{ix}.log")
@@ -83,23 +83,23 @@ rule varscan_mpileup2snp:
 
 rule varscan_mpileup2indel:
     input:
-         genome_fa = ancient(GS.remote(REF)),
-         genome_fai = ancient(GS.remote(FAI)),
-         genome_dict = ancient(GS.remote(DICT)),
-         bam = ancient(GS.remote(BAM)),
-         bai = ancient(GS.remote(BAI))
+         genome_fa = REF,
+         genome_fai = FAI,
+         genome_dict = DICT,
+         bam = BAM,
+         bai = BAI
     output: GS.remote(BUCKET + "/{sample}.varscan.indel.chr{ix}.vcf")
     params: chr="{ix}"
     log: GS.remote(BUCKET + "/logs/{sample}.varscan.snp.chr{ix}.log")
     shell: "samtools mpileup -q 1 -Q 13 -f {input.genome_fa} -r {params.chr} {input.bam} | varscan mpileup2indel - --min-coverage 3 --min-var-freq 0.10 --p-value 0.10 --strand-filter 1 --output-vcf 1 > {output} 2>{log}"
 
 rule varscan_snp_index:
-    input: ancient(GS.remote(BUCKET+"/{sample}.varscan.snp.chr{ix}.vcf"))
+    input: GS.remote(BUCKET+"/{sample}.varscan.snp.chr{ix}.vcf")
     output: "{sample}.varscan.snp.chr{ix}.vcf.gz"
     shell: "bcftools view {input} -Oz -o {output}; bcftools index {output}"
 
 rule varscan_indel_index:
-    input: ancient(GS.remote(BUCKET+"/{sample}.varscan.indel.chr{ix}.vcf"))
+    input: GS.remote(BUCKET+"/{sample}.varscan.indel.chr{ix}.vcf")
     output: "{sample}.varscan.indel.chr{ix}.vcf.gz"
     shell: "bcftools view {input} -Oz -o {output}; bcftools index {output}"
 
@@ -123,11 +123,11 @@ rule pindel_config:
 
 rule pindel_call:
     input:
-        ref = ancient(GS.remote(REF)),
-        genome_fai = ancient(GS.remote(FAI)),  
-        samples = ancient(GS.remote(BAM)),
-        bai = ancient(GS.remote(BAI)),
-        config = ancient(GS.remote(BUCKET+"/"+SAMPLE+".pindel_config.txt"))
+        ref = REF,
+        genome_fai = FAI,  
+        samples = BAM,
+        bai = BAI,
+        config = GS.remote(BUCKET+"/"+SAMPLE+".pindel_config.txt")
     output: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw")
     params:
         prefix= BUCKET+"/pindel/chr{ix}/{sample}.chr{ix}",
@@ -141,9 +141,9 @@ rule pindel_call:
 #Generate the config file for pindel_filter.v0.5.pl
 
 rule pindel_filter_config:
-    input: ancient(GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw"))
+    input: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw")
     output: 
-        GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt"
+        GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt")
     params: 
         sample="{sample}",
         chr="{ix}",
@@ -171,8 +171,8 @@ pindel.filter.germline.max_num_homopolymer_repeat_units = 6")
 
 rule filter_pindel:
     input: 
-        config_file=ancient(GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt")),
-        raw=ancient(GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw"))
+        config_file=GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt"),
+        raw=GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw")
     output: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf")
     params: 
         chr='{ix}',
@@ -180,7 +180,7 @@ rule filter_pindel:
     shell: "perl /home/germline_variant_snakemake/scripts/pindel_filter.v0.5.pl {input.config_file}"
 
 rule index_pindel:
-    input: ancient(GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf"))
+    input: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf")
     output: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf.gz"
     shell: 'bcftools view {input} -Oz -o {output}; bcftools index {output}'
 
