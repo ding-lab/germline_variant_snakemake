@@ -49,8 +49,14 @@ docker:
 inputParameters:
 - name: fafile
   description: Cloud Storage path or pattern to input file(s)
+  localCopy:
+    path: input/
+    disk: datadisk
 - name: faifile
   description: Cloud Storage path or pattern to input files
+  localCopy:
+    path: input/
+    disk: datadisk
 - name: dictfile
   description: Cloud Storage path or pattern to input files
   localCopy:
@@ -58,8 +64,14 @@ inputParameters:
      disk: datadisk
 - name: bamfile
   description: Cloud Storage path
+  localCopy:
+     path: input/
+     disk: datadisk
 - name: baifile
   description: Cloud Storage path or pattern to input file(s)
+  localCopy:
+     path: input/
+     disk: datadisk
 - name: sample
   description: File names
 - name: passvalue
