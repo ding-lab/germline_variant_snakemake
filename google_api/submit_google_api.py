@@ -72,33 +72,33 @@ def check_status(row):
         else:
             print("case "+case+" : "+operation_id+" is successfully done")
             return "Done"
+print(build_table(sys.argv[1])["cmd"][0])
 
+#RESULT_TSV = build_table(sys.argv[1])
+#RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
+#UNDONE_LIST = RESULT_TSV[(RESULT_TSV["status"]!="Done") & (RESULT_TSV["num_of_repeats"]<=15)]["case_full_barcode"].tolist()
+#print("There are "+str(len(UNDONE_LIST))+" samples to work on.")
 
-RESULT_TSV = build_table(sys.argv[1])
-RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
-UNDONE_LIST = RESULT_TSV[(RESULT_TSV["status"]!="Done") & (RESULT_TSV["num_of_repeats"]<=15)]["case_full_barcode"].tolist()
-print("There are "+str(len(UNDONE_LIST))+" samples to work on.")
-
-while len(UNDONE_LIST) !=0:
+#while len(UNDONE_LIST) !=0:
     ## Generate a smaller tsv for task to run
-    WORKING_LIST = UNDONE_LIST[:25]
-    WORKING_TSV = RESULT_TSV[(RESULT_TSV["case_full_barcode"].isin(WORKING_LIST)) & (RESULT_TSV["status"] != "Running")]
-    CHECKING_TSV = RESULT_TSV[(RESULT_TSV["case_full_barcode"].isin(WORKING_LIST)) & (RESULT_TSV["status"] == "Running")]
-    if len(WORKING_TSV)>0:
+#    WORKING_LIST = UNDONE_LIST[:25]
+#    WORKING_TSV = RESULT_TSV[(RESULT_TSV["case_full_barcode"].isin(WORKING_LIST)) & (RESULT_TSV["status"] != "Running")]
+#    CHECKING_TSV = RESULT_TSV[(RESULT_TSV["case_full_barcode"].isin(WORKING_LIST)) & (RESULT_TSV["status"] == "Running")]
+#    if len(WORKING_TSV)>0:
         ## Luanch VM and get operation ID
-        WORKING_TSV["operation_id"] = WORKING_TSV.apply(get_operation_id, axis=1)
-        WORKING_TSV["status"] = "Running"
-        WORKING_TSV["num_of_repeats"] += 1
-        RESULT_TSV.update(WORKING_TSV)
-    if len(CHECKING_TSV)>0:
+#        WORKING_TSV["operation_id"] = WORKING_TSV.apply(get_operation_id, axis=1)
+#        WORKING_TSV["status"] = "Running"
+#        WORKING_TSV["num_of_repeats"] += 1
+#        RESULT_TSV.update(WORKING_TSV)
+#    if len(CHECKING_TSV)>0:
     ## Check the status until task is complete
-        CHECKING_TSV["status"] = CHECKING_TSV.apply(check_status, axis=1)
+#        CHECKING_TSV["status"] = CHECKING_TSV.apply(check_status, axis=1)
     ## Update the result table
-        RESULT_TSV.update(CHECKING_TSV)
-    RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
+#        RESULT_TSV.update(CHECKING_TSV)
+#    RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
     ## Generate a new undone_list based on the status 
-    UNDONE_LIST = RESULT_TSV[(RESULT_TSV["status"]!="Done") & (RESULT_TSV["num_of_repeats"]<=15)]["case_full_barcode"].tolist()
-    print("There are "+str(len(UNDONE_LIST))+" samples to work on.")
-    time.sleep(300)
-else:
-    RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
+#    UNDONE_LIST = RESULT_TSV[(RESULT_TSV["status"]!="Done") & (RESULT_TSV["num_of_repeats"]<=15)]["case_full_barcode"].tolist()
+#    print("There are "+str(len(UNDONE_LIST))+" samples to work on.")
+#    time.sleep(300)
+#else:
+#    RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
