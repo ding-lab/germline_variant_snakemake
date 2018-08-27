@@ -23,7 +23,7 @@ def build_table(path_to_manifest):
     df["size"] = df["file_size"].apply(lambda x: x*2/1000000000 if x*2/1000000000 > 50 else "50") # Convert the file size from byte to GB
 
     # Get the gspath of reference files
-    df["gspath_to_ref"] = df["reference"].apply(lambda x: "gs://dinglab/reference/Homo_sapiens_assembly19.fasta" if x=="HG19_Broad_variant" else "gs://dinglab/reference/GRCh37-lite.fa")
+    df["gspath_to_ref"] = df["reference"].apply(lambda x: "gs://ding_lab_reference/Homo_sapiens_assembly19.fasta" if x=="HG19_Broad_variant" else ( "gs://ding_lab_reference/GRCh37-lite.fa" if x=="GRCh37" else "Not_Determined"))
     df["dict"] = df["gspath_to_ref"].str.split(".").str[0]+".dict"
 
     # Assign bucket
