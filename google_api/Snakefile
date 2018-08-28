@@ -114,29 +114,22 @@ rule varscan_merge_indel_vcf:
     shell: "bcftools concat -o {output} {input}"
 
 ###Run Pindel
-rule pindel_config:
-    output: GS.remote(BUCKET+"/"+SAMPLE+".pindel_config.txt")
-    run:
-        filename= BUCKET+"/"+SAMPLE+".pindel_config..txt"
-        with open(filename, "w") as f1:
-            f1.write(BAM.split("/")[-1], "500", SAMPLE, sep="\t")
-
 rule pindel_call:
     input:
         ref = REF,
         genome_fai = FAI,  
         samples = BAM,
-        bai = BAI,
-        config = GS.remote(BUCKET+"/"+SAMPLE+".pindel_config.txt")
+        bai = BAI
     output: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw")
     params:
         prefix= BUCKET+"/pindel/chr{ix}/{sample}.chr{ix}",
         extra="-x 4 -w 0.1 -B 0 -M 3 -J /home/germline_variant_snakemake/files/pindel-centromere-exclude.bed -c {ix}",
         chr="{ix}",
         sample="{sample}",
+        bam=BAM.split("/")[-1]
     log: GS.remote(BUCKET + "/logs/{sample}.pindel.chr{ix}.log")
     threads: 4
-    shell: "pindel {params.extra} -T {threads} -f {input.ref} -i {input.config} -o {params.prefix} -L {log}; cat {params.prefix}_D {params.prefix}_INV {params.prefix}_TD {params.prefix}_SI | grep ChrID > {output}"
+    shell: "echo -e ""{params.bam}\t500\t{params.sample}"" > {params.prefix}.pindel_config.txt; pindel {params.extra} -T {threads} -f {input.ref} -i {params.prefix}.pindel_config.txt -o {params.prefix} -L {log}; cat {params.prefix}_D {params.prefix}_INV {params.prefix}_TD {params.prefix}_SI | grep ChrID > {output}"
 
 #Generate the config file for pindel_filter.v0.5.pl
 
