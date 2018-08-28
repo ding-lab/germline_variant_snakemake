@@ -39,7 +39,7 @@ docker:
     touch /mnt/data/input/*.fai &&
     echo -e "sample\treference\tbampath\tbucket" > sample.txt &&
     echo -e "${sample}\t${fafile}\t${bamfile}\twliang/germline_snakemake/output/${passvalue}/${sample}" | awk -F "\t" '{OFS="\t"; l1=split($2, b, "/"); l2=split($3, c, "/"); print $1, "/mnt/data/input/"b[l1], "/mnt/data/input/"c[l2], $4}' >> sample.txt &&
-    snakemake --snakefile /home/germline_variant_snakemake/google_api/Snakefile -j 40 -p all_tools --restart-times 10 --verbose &&
+    snakemake --snakefile /home/germline_variant_snakemake/google_api/Snakefile -j 35 -p all_tools --restart-times 10 --verbose &&
     cp ${sample}.*.filtered.vcf /mnt/data/output &&
     cp ${sample}.pindel.vcf /mnt/data/output
 
