@@ -126,7 +126,7 @@ rule pindel_call:
         extra="-x 4 -w 0.1 -B 0 -M 3 -J /home/germline_variant_snakemake/files/pindel-centromere-exclude.bed -c {ix}",
         chr="{ix}",
         sample="{sample}",
-        bam=BAM.split("/")[-1]
+        bam=BAM
     log: GS.remote(BUCKET + "/logs/{sample}.pindel.chr{ix}.log")
     threads: 4
     shell: "echo -e ""{params.bam}\t500\t{params.sample}"" > {params.prefix}.pindel_config.txt; pindel {params.extra} -T {threads} -f {input.ref} -i {params.prefix}.pindel_config.txt -o {params.prefix} -L {log}; cat {params.prefix}_D {params.prefix}_INV {params.prefix}_TD {params.prefix}_SI | grep ChrID > {output}"
@@ -144,10 +144,10 @@ rule pindel_filter_config:
         path2pindel2vcf = config["path_to_pindel2vcf"],
         bucket = BUCKET
     run:
-        for ix in CHR:
-            filename= BUCKET+"/pindel/chr{params.chr}/{params.sample}.pindel.input.chr{params.chr}.txt"
-            with open(filename, "w") as f:
-                f.write ( \
+        filename= BUCKET+f"/pindel/chr{params.chr}/{params.sample}.pindel.input.chr{params.chr}.txt"
+        print(filename)
+        with open(filename, "w") as f:
+            f.write ( \
 f"pindel.filter.pindel2vcf = {params.path2pindel2vcf}\n\
 pindel.filter.variants_file = /mnt/data/input/{params.bucket}/pindel/chr{params.chr}/{params.sample}.pindel.out.chr{params.chr}.raw\n\
 pindel.filter.REF = {params.ref_file}\n\
@@ -161,6 +161,7 @@ pindel.filter.germline.min_var_allele_freq = 0.20\n\
 pindel.filter.germline.require_balanced_reads = 'true'\n\
 pindel.filter.germline.remove_complex_indels = 'true'\n\
 pindel.filter.germline.max_num_homopolymer_repeat_units = 6")
+
 
 rule filter_pindel:
     input: 
