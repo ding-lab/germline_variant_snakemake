@@ -59,12 +59,12 @@ rule gatk_selectvariant_indel:
 
 rule gatk_merge_snp_vcf:
     input: GS.remote(expand(BUCKET+'/{{sample}}.gatk.snp.chr{ix}.vcf', ix=CHR))
-    output: "{sample}.gatk.snp.vcf"
+    output: GS.remote(BUCKET + "/{sample}.gatk.snp.vcf")
     shell: "bcftools concat -o {output} {input}"
 
 rule gatk_merge_indel_vcf:
     input: GS.remote(expand(BUCKET+'/{{sample}}.gatk.indel.chr{ix}.vcf', ix=CHR))
-    output: "{sample}.gatk.indel.vcf"
+    output: GS.remote(BUCKET +"/{sample}.gatk.indel.vcf")
     shell: "bcftools concat -o {output} {input}"
 
 
@@ -95,22 +95,22 @@ rule varscan_mpileup2indel:
 
 rule varscan_snp_index:
     input: GS.remote(BUCKET+"/{sample}.varscan.snp.chr{ix}.vcf")
-    output: "{sample}.varscan.snp.chr{ix}.vcf.gz"
+    output: GS.remote(BUCKET+"/{sample}.varscan.snp.chr{ix}.vcf.gz")
     shell: "bcftools view {input} -Oz -o {output}; bcftools index {output}"
 
 rule varscan_indel_index:
     input: GS.remote(BUCKET+"/{sample}.varscan.indel.chr{ix}.vcf")
-    output: "{sample}.varscan.indel.chr{ix}.vcf.gz"
+    output: GS.remote(BUCKET+"/{sample}.varscan.indel.chr{ix}.vcf.gz")
     shell: "bcftools view {input} -Oz -o {output}; bcftools index {output}"
 
 rule varscan_merge_snp_vcf:
-    input: expand('{{sample}}.varscan.snp.chr{ix}.vcf.gz', ix=CHR)
-    output: "{sample}.varscan.snp.vcf"
+    input: GS.remote(expand(BUCKET+'/{{sample}}.varscan.snp.chr{ix}.vcf.gz', ix=CHR))
+    output: GS.remote(BUCKET+"/{sample}.varscan.snp.vcf")
     shell: "bcftools concat -o {output} {input}"
 
 rule varscan_merge_indel_vcf:
-    input: expand('{{sample}}.varscan.indel.chr{ix}.vcf.gz', ix=CHR)
-    output: "{sample}.varscan.indel.vcf"
+    input: GS.remote(expand(BUCKET+'/{{sample}}.varscan.indel.chr{ix}.vcf.gz', ix=CHR))
+    output: GS.remote(BUCKET+"/{sample}.varscan.indel.vcf")
     shell: "bcftools concat -o {output} {input}"
 
 ###Run Pindel
@@ -175,24 +175,28 @@ rule filter_pindel:
 
 rule index_pindel:
     input: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf")
-    output: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf.gz"
+    output: GS.remote(BUCKET+"/pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf.gz")
     shell: 'bcftools view {input} -Oz -o {output}; bcftools index {output}'
 
 rule pindel_merge_vcf:
-    input: expand("pindel/chr{ix}/{{sample}}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf.gz", ix=CHR)
-    output: "{sample}.pindel.vcf"
-    shell: "bcftools concat -o {output} {input}"
+    input: GS.remote(expand(BUCKET+"/pindel/chr{ix}/{{sample}}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf.gz", ix=CHR))
+    output: GS.remote(BUCKET+"/{sample}.pindel.vcf")
+    params: sample='{sample}'
+    shell: "for i in ls {input}; do if [ `bcftools query -l $i | wc -l` -eq 1 ]; then echo $i >> {params.sample}.pindel_vcf.list; fi ; done ; bcftools concat -f {params.sample}.pindel_vcf.list -o {output}"
+
 
 rule all_tools:
     input: 
-        expand("{sample}.gatk.snp.filtered.vcf", sample=SAMPLE),
-        expand("{sample}.gatk.indel.filtered.vcf", sample=SAMPLE),
-        expand("{sample}.varscan.snp.filtered.vcf", sample=SAMPLE),
-        expand("{sample}.varscan.indel.filtered.vcf", sample=SAMPLE),
-        expand("{sample}.pindel.vcf", sample=SAMPLE)
+        GS.remote(expand(BUCKET+"/{sample}.gatk.snp.filtered.vcf", sample=SAMPLE)),
+        GS.remote(expand(BUCKET+"/{sample}.gatk.indel.filtered.vcf", sample=SAMPLE)),
+        GS.remote(expand(BUCKET+"/{sample}.varscan.snp.filtered.vcf", sample=SAMPLE)),
+        GS.remote(expand(BUCKET+"/{sample}.varscan.indel.filtered.vcf", sample=SAMPLE)),
+        GS.remote(expand(BUCKET+"/{sample}.pindel.vcf", sample=SAMPLE))
 
 rule filter:
-    input: "{sample}.gatk.snp.vcf", "{sample}.gatk.indel.vcf", "{sample}.varscan.snp.vcf", "{sample}.varscan.indel.vcf", "{sample}.pindel.vcf"
-    output: "{sample}.gatk.snp.filtered.vcf", "{sample}.gatk.indel.filtered.vcf", "{sample}.varscan.snp.filtered.vcf", "{sample}.varscan.indel.filtered.vcf"
-    params: sample = '{sample}'
-    shell: "perl /home/germline_variant_snakemake/scripts/filter_gatk_varscan.pl `pwd` {params.sample}"
+    input: GS.remote(BUCKET+"/{sample}.gatk.snp.vcf"), GS.remote(BUCKET+"/{sample}.gatk.indel.vcf"), GS.remote(BUCKET+"/{sample}.varscan.snp.vcf"), GS.remote(BUCKET+"/{sample}.varscan.indel.vcf"), GS.remote(BUCKET+"/{sample}.pindel.vcf")
+    output: GS.remote(BUCKET+"/{sample}.gatk.snp.filtered.vcf"), GS.remote(BUCKET+"/{sample}.gatk.indel.filtered.vcf"), GS.remote(BUCKET+"/{sample}.varscan.snp.filtered.vcf"), GS.remote(BUCKET+"/{sample}.varscan.indel.filtered.vcf")
+    params: 
+        sample = '{sample}',
+        bucket = BUCKET
+    shell: "perl /home/germline_variant_snakemake/scripts/filter_gatk_varscan.pl /mnt/data/input/{params.bucket}/ {params.sample}"
