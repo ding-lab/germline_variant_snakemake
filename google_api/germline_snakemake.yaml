@@ -42,7 +42,7 @@ docker:
     snakemake --snakefile /home/germline_variant_snakemake/google_api/Snakefile -j 60 -p all_tools --restart-times 10 --verbose &&
     cp /mnt/data/input/wliang/germline_snakemake/output/${passvalue}/${sample}/stage/${sample}.*.filtered.vcf /mnt/data/output &&
     cp /mnt/data/input/wliang/germline_snakemake/output/${passvalue}/${sample}/stage/${sample}.pindel.vcf /mnt/data/output &&
-    gsutil rm -r -m -o gs://wliang/germline_snakemake/output/${passvalue}/${sample}/stage/
+    gsutil -m rm -r gs://wliang/germline_snakemake/output/${passvalue}/${sample}/stage/
 
 # The Pipelines API currently supports GCS paths, along with patterns (globs),
 # but it doesn't directly support a list of files being passed as a single input

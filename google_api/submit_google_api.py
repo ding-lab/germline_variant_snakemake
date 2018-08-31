@@ -73,7 +73,7 @@ def check_status(row):
             print("case "+case+" : "+operation_id+" is successfully done")
             return "Done"
 
-print(build_table(sys.argv[1])["cmd"][1])
+print(build_table(sys.argv[1])["cmd"][0])
 
 ## Create the default table based on sys.argv[1]
 #RESULT_TSV = build_table(sys.argv[1])
