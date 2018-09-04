@@ -48,7 +48,7 @@ rule gatk_selectvariant_snp:
     output: GS.remote(BUCKET + "/{sample}.gatk.snp.chr{ix}.vcf")
     log: GS.remote(BUCKET + "/logs/{sample}.gatk.selectsnp.chr{ix}.log")
     benchmark: GS.remote(BUCKET + "/benchmark/{sample}.gatk.selectsnp.chr{ix}.benchmark.tsv")
-#    resources: mem_mb=500
+    resources: mem_mb=2000
     shell: "gatk SelectVariants -R {input.genome_fa} -V {input.input_vcf} -O {output} -select-type SNP -select-type MNP 2>{log}"
 
 rule gatk_selectvariant_indel:
@@ -60,7 +60,7 @@ rule gatk_selectvariant_indel:
     output: GS.remote(BUCKET + "/{sample}.gatk.indel.chr{ix}.vcf")
     log: GS.remote(BUCKET + "/logs/{sample}.gatk.selectindel.chr{ix}.log")
     benchmark: GS.remote(BUCKET + "/benchmark/{sample}.gatk.selectindel.chr{ix}.benchmark.tsv")
-#    resources: mem_mb=430
+    resources: mem_mb=1500
     shell: "gatk SelectVariants -R {input.genome_fa} -V {input.input_vcf} -O {output} -select-type INDEL 2>{log}"
 
 rule gatk_merge_snp_vcf:
@@ -87,7 +87,7 @@ rule varscan_mpileup2snp:
     log: GS.remote(BUCKET + "/logs/{sample}.varscan.snp.chr{ix}.log")
     benchmark: GS.remote(BUCKET + "/benchmark/{sample}.varscan.snp.chr{ix}.benchmark.tsv")
     threads: 2
-#    resources: mem_mb=1000
+    resources: mem_mb=2000
     shell: "samtools mpileup -q 1 -Q 13 -f {input.genome_fa} -r {params.chr} {input.bam} | varscan mpileup2snp - --min-coverage 3 --min-var-freq 0.10 --p-value 0.10 --strand-filter 1 --output-vcf 1 > {output} 2>{log}"
 
 rule varscan_mpileup2indel:
@@ -102,7 +102,7 @@ rule varscan_mpileup2indel:
     log: GS.remote(BUCKET + "/logs/{sample}.varscan.indel.chr{ix}.log")
     benchmark: GS.remote(BUCKET + "/benchmark/{sample}.varscan.indel.chr{ix}.benchmark.tsv")
     threads: 2
-#    resources: mem_mb=1000
+    resources: mem_mb=2000
     shell: "samtools mpileup -q 1 -Q 13 -f {input.genome_fa} -r {params.chr} {input.bam} | varscan mpileup2indel - --min-coverage 3 --min-var-freq 0.10 --p-value 0.10 --strand-filter 1 --output-vcf 1 > {output} 2>{log}"
 
 rule varscan_snp_index:
@@ -143,7 +143,7 @@ rule pindel_call:
     log: GS.remote(BUCKET + "/logs/{sample}.pindel.chr{ix}.log")
     benchmark: GS.remote(BUCKET + "/benchmark/{sample}.pindel.chr{ix}.benchmark.tsv")
     threads: 4
-    resources: mem_mb=7000
+    resources: mem_mb=5000
     shell: "echo -e ""{params.bam}\t500\t{params.sample}"" > {params.prefix}.pindel_config.txt; pindel {params.extra} -T {threads} -f {input.ref} -i {params.prefix}.pindel_config.txt -o {params.prefix} -L {log}; cat {params.prefix}_D {params.prefix}_INV {params.prefix}_TD {params.prefix}_SI | grep ChrID > {output}"
 
 #Generate the config file for pindel_filter.v0.5.pl
