@@ -34,9 +34,9 @@ docker:
     mkdir /mnt/data/output && 
     find /mnt/data/input &&
     cd /mnt/data/input &&
-    touch /mnt/datadisk/input/*.bai &&
-    touch /mnt/datadisk/input/*.dict &&
-    touch /mnt/datadisk/input/*.fai &&
+    touch /mnt/data/input/*.bai &&
+    touch /mnt/data/input/*.dict &&
+    touch /mnt/data/input/*.fai &&
     echo -e "sample\treference\tbampath\tbucket" > sample.txt &&
     echo -e "${sample}\t${fafile}\t${bamfile}\twliang/germline_snakemake/output/${passvalue}/${sample}/stage" | awk -F "\t" '{OFS="\t"; l1=split($2, b, "/"); l2=split($3, c, "/"); print $1, "/mnt/data/input/"b[l1], "/mnt/data/input/"c[l2], $4}' >> sample.txt &&
     snakemake --snakefile /home/germline_variant_snakemake/google_api/Snakefile -j 63 -p all_tools --restart-times 10 --verbose &&
