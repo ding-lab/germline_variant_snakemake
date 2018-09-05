@@ -89,7 +89,7 @@ print("There are "+str(len(UNDONE_LIST))+" samples to work on.")
 while len(UNDONE_LIST) !=0:
     ## Generate a smaller tsv for task to run
     ## Select the first 25 samples from undone_list
-    WORKING_LIST = UNDONE_LIST[:50]
+    WORKING_LIST = UNDONE_LIST[:70]
     ## Group samples based on status. Check if the stauts == running.
     WORKING_TSV = RESULT_TSV[(RESULT_TSV["case_full_barcode"].isin(WORKING_LIST)) & (RESULT_TSV["status"] != "Running")]
     CHECKING_TSV = RESULT_TSV[(RESULT_TSV["case_full_barcode"].isin(WORKING_LIST)) & (RESULT_TSV["status"] == "Running")]
