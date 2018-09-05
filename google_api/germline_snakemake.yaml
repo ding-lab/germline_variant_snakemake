@@ -34,14 +34,15 @@ docker:
     mkdir /mnt/data/output && 
     find /mnt/data/input &&
     cd /mnt/data/input &&
-    touch /mnt/data/input/*.bai &&
-    touch /mnt/data/input/*.dict &&
-    touch /mnt/data/input/*.fai &&
+    touch /mnt/datadisk/input/*.bai &&
+    touch /mnt/datadisk/input/*.dict &&
+    touch /mnt/datadisk/input/*.fai &&
     echo -e "sample\treference\tbampath\tbucket" > sample.txt &&
     echo -e "${sample}\t${fafile}\t${bamfile}\twliang/germline_snakemake/output/${passvalue}/${sample}/stage" | awk -F "\t" '{OFS="\t"; l1=split($2, b, "/"); l2=split($3, c, "/"); print $1, "/mnt/data/input/"b[l1], "/mnt/data/input/"c[l2], $4}' >> sample.txt &&
     snakemake --snakefile /home/germline_variant_snakemake/google_api/Snakefile -j 63 -p all_tools --restart-times 10 --verbose &&
-    cp /mnt/data/input/wliang/germline_snakemake/output/${passvalue}/${sample}/stage/${sample}.*.filtered.vcf /mnt/data/output &&
-    cp /mnt/data/input/wliang/germline_snakemake/output/${passvalue}/${sample}/stage/${sample}.pindel.vcf /mnt/data/output &&
+    cp /mnt/datadisk/input/wliang/germline_snakemake/output/${passvalue}/${sample}/stage/${sample}.*.filtered.vcf /mnt/datadisk/output &&
+    cp /mnt/datadisk/input/wliang/germline_snakemake/output/${passvalue}/${sample}/stage/${sample}.pindel.vcf /mnt/datadisk/output &&
+    cp -r /mnt/datadisk/input/wliang/germline_snakemake/output/${passvalue}/${sample}/stage/benchmark /mnt/datadisk/output &&
     gsutil -m rm -r gs://wliang/germline_snakemake/output/${passvalue}/${sample}/stage/
 
 # The Pipelines API currently supports GCS paths, along with patterns (globs),

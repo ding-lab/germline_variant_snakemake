@@ -66,8 +66,10 @@ def check_status(row):
     else:
         print("case "+case+" : "+operation_id+" is complete. Check if the task is successful...")
         done = subprocess.check_output(cmd2, shell=True, universal_newlines=True).splitlines()[0]
+        msg = subprocess.check_output(cmd2, shell=True, universal_newlines=True).splitlines()
         if done:
             print("case "+case+" : "+operation_id+" is failed")
+            print(msg)
             return "Fail"
         else:
             print("case "+case+" : "+operation_id+" is successfully done")
