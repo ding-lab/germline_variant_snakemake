@@ -92,14 +92,14 @@ while len(UNDONE_LIST) !=0:
     ## Select the first x samples from undone_list
     print('Please press Cltr-C when you wish to change the number of running VM')
     try:
-        for i in range(0, 300):
-            sleep(5)
-        print('Waiting for 5 minutes. 30 VMs will keep running this time.')
+        for i in range(0, 10):
+            time.sleep(1)
+        print('Waiting for 10 seconds. 30 VMs will keep running this time.')
         WORKING_LIST = UNDONE_LIST[:30]
     except KeyboardInterrupt:
         num=input("How many jobs you want to run this time? ")
-        num=float(num)
         print(num + "VMs will keep running this time.")
+        num=float(num)
         WORKING_LIST = UNDONE_LIST[:num]
     ## Group samples based on status. Check if the stauts == running.
     WORKING_TSV = RESULT_TSV[(RESULT_TSV["case_full_barcode"].isin(WORKING_LIST)) & (RESULT_TSV["status"] != "Running")]
@@ -120,6 +120,6 @@ while len(UNDONE_LIST) !=0:
     UNDONE_LIST = RESULT_TSV[(RESULT_TSV["status"]!="Done") & (RESULT_TSV["num_of_repeats"]<=15)]["case_full_barcode"].tolist()
     print("There are "+str(len(UNDONE_LIST))+" samples to work on.")
     ## Wait for 300 second and check the status againg
-    #time.sleep(300)
+    time.sleep(300)
 else:
     RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
