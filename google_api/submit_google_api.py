@@ -98,8 +98,8 @@ while len(UNDONE_LIST) !=0:
         WORKING_LIST = UNDONE_LIST[:30]
     except KeyboardInterrupt:
         num=input("How many jobs you want to run this time? ")
-        print(num + "VMs will keep running this time.")
-        num=float(num)
+        print(num + " VMs will keep running this time.")
+        num=int(num)
         WORKING_LIST = UNDONE_LIST[:num]
     ## Group samples based on status. Check if the stauts == running.
     WORKING_TSV = RESULT_TSV[(RESULT_TSV["case_full_barcode"].isin(WORKING_LIST)) & (RESULT_TSV["status"] != "Running")]
