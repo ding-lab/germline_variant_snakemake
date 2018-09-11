@@ -39,7 +39,9 @@ docker:
     touch /mnt/data/input/*.fai &&
     echo -e "sample\treference\tbampath\tbucket" > sample.txt &&
     echo -e "${sample}\t${fafile}\t${bamfile}\twliang/germline_snakemake/output/${passvalue}/${sample}/stage" | awk -F "\t" '{OFS="\t"; l1=split($2, b, "/"); l2=split($3, c, "/"); print $1, "/mnt/data/input/"b[l1], "/mnt/data/input/"c[l2], $4}' >> sample.txt &&
-    snakemake --snakefile /home/germline_variant_snakemake/google_api/Snakefile -j 63 -p all_tools --restart-times 10 --verbose
+    snakemake --snakefile /home/germline_variant_snakemake/google_api/Snakefile -j 63 -p all_tools --restart-times 10 --verbose &&
+    cp wliang/germline_snakemake/output/${passvalue}/${sample}/stage/*.filtered.vcf /mnt/data/output/ &&
+    cp wliang/germline_snakemake/output/${passvalue}/${sample}/stage/*.pindel.vcf /mnt/data/output/
 
 # The Pipelines API currently supports GCS paths, along with patterns (globs),
 # but it doesn't directly support a list of files being passed as a single input
