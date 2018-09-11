@@ -120,6 +120,6 @@ while len(UNDONE_LIST) !=0:
     UNDONE_LIST = RESULT_TSV[(RESULT_TSV["status"]!="Done") & (RESULT_TSV["num_of_repeats"]<=15)]["case_full_barcode"].tolist()
     print("There are "+str(len(UNDONE_LIST))+" samples to work on.")
     ## Wait for 300 second and check the status againg
-    time.sleep(300)
+    time.sleep(60)
 else:
     RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
