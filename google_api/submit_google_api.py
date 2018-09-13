@@ -31,7 +31,7 @@ def build_table(path_to_manifest):
     df["output"] = bucket+"output/"+df["pass"]+"/"+df["case_full_barcode"]
 
     # Get the full commend
-    df["cmd"] = cmd+df["gspath_to_ref"]+",faifile="+df["gspath_to_ref"]+".fai,dictfile="+df["dict"]+",bamfile="+df["gspath_to_bam"]+",baifile="+df["gspath_to_bai"]+",sample="+df["case_full_barcode"]+",passvalue="+df["pass"]+" --logging "+df["log"]+" --outputs outputPath="+df["output"]
+    df["cmd"] = cmd+df["gspath_to_ref"]+",faifile="+df["gspath_to_ref"]+".fai,dictfile="+df["dict"]+",bamfile="+df["gspath_to_bam"]+",baifile="+df["gspath_to_bai"]+",sample="+df["case_full_barcode"]+",passvalue="+df["pass"]+" --logging "+df["log"]  #+"#--outputs outputPath="+df["output"]
 
     # build table
     d = df[["case_full_barcode","cmd"]]
