@@ -77,10 +77,10 @@ def check_status(row):
 
 
 ## Create the default table based on sys.argv[2]
-if sys.argv[1]==1:
-    RESULT_TSV = build_table(sys.argv[1])
+if sys.argv[1]=="1":
+    RESULT_TSV = build_table(sys.argv[2])
     RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
-elif sys.argv[1]==2:
+if sys.argv[1]=="2":
     RESULT_TSV = pd.read_table(sys.argv[2])
 
 ## Generate an undone_list based on the status and number of tries.
