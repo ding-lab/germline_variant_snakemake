@@ -99,7 +99,7 @@ while len(UNDONE_LIST) !=0:
     try:
         for i in range(0, 10):
             time.sleep(1)
-        print('Waiting for 10 seconds. 30 VMs will keep running this time.')
+        print('Waiting for 10 seconds. '+num+' VMs will keep running this time.')
         WORKING_LIST = UNDONE_LIST[:num]
     except KeyboardInterrupt:
         num=input("How many jobs you want to run this time? ")
