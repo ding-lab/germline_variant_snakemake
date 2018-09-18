@@ -75,16 +75,21 @@ def check_status(row):
             print("case "+case+" : "+operation_id+" is successfully done")
             return "Done"
 
-#print(build_table(sys.argv[1])["cmd"][0])
 
-## Create the default table based on sys.argv[1]
-RESULT_TSV = build_table(sys.argv[1])
-RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
+## Create the default table based on sys.argv[2]
+if sys.argv[1]==1:
+    RESULT_TSV = build_table(sys.argv[1])
+    RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
+elif sys.argv[1]==2:
+    RESULT_TSV = pd.read_table(sys.argv[2])
 
 ## Generate an undone_list based on the status and number of tries.
 UNDONE_LIST = RESULT_TSV[(RESULT_TSV["status"]!="Done") & (RESULT_TSV["num_of_repeats"]<=15)]["case_full_barcode"].tolist()
 print("There are "+str(len(UNDONE_LIST))+" samples to work on.")
 
+
+
+num = int(30)
 ## If there are undone tasks
 while len(UNDONE_LIST) !=0:
     ## Generate a smaller tsv for task to run
@@ -95,7 +100,7 @@ while len(UNDONE_LIST) !=0:
         for i in range(0, 10):
             time.sleep(1)
         print('Waiting for 10 seconds. 30 VMs will keep running this time.')
-        WORKING_LIST = UNDONE_LIST[:30]
+        WORKING_LIST = UNDONE_LIST[:num]
     except KeyboardInterrupt:
         num=input("How many jobs you want to run this time? ")
         print(num + " VMs will keep running this time.")
