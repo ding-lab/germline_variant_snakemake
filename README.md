@@ -19,7 +19,7 @@ Snakemake workflow to call germline variant by using GATK, VarScan, and Pindel. 
 
 `scripts`: Customized scripts for germline variant calling. 
 
-`files`: Required files for germline variant calling tools.
+`files`: Required files like chromosome intervals for germline variant calling tools (Check if your reads started with `chr` or not. Change the prefix of chromosome accordingly).
 
 ## How to start on a local enviornment
 
