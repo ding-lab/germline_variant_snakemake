@@ -31,6 +31,8 @@ Snakemake workflow to call germline variant by using GATK, VarScan, and Pindel. 
 
 4. Go to folder: `cd local_test`
 
+5. Change the path to `pindel2vcf` in `config.yaml` accordinly. (Follow the section below)
+
 5. Dry run: `snakemake -n -p all_tools`
 
 6. Run a task: `snakemake -j ${how many cpu you want to use} -p all_tools`. Noted that all the files will be kept. Remerber to delete temp files to save the disk space.
