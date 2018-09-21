@@ -25,17 +25,25 @@ Snakemake workflow to call germline variant by using GATK, VarScan, and Pindel. 
 
 1. Clone the repository: `git clone https://github.com/ding-lab/germline_variant_snakemake.git`
 
-2. Create a conda environment: `conda create -n snakemake python=3.6 snakemake pindel varscan gatk4 samtools pandas bcftools`
+2. Change the priority of conda channels:
 
-3. Activate environment: `source activate snakemake`
+```
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+```
 
-4. Go to folder: `cd local_test`
+3. Create a conda environment: `conda create -n snakemake python=3.6 snakemake pindel varscan gatk4 samtools pandas bcftools`
 
-5. Change the path to `pindel2vcf` in `config.yaml` accordinly. (Follow the section below)
+4. Activate environment: `source activate snakemake`
 
-5. Dry run: `snakemake -n -p all_tools`
+5. Go to folder: `cd local_test`
 
-6. Run a task: `snakemake -j ${how many cpu you want to use} -p all_tools`. Noted that all the files will be kept. Remerber to delete temp files to save the disk space.
+6. Change the path to `pindel2vcf` in `config.yaml` accordinly. (Follow the section below)
+
+7. Dry run: `snakemake -n -p all_tools`
+
+8. Run a task: `snakemake -j ${how many cpu you want to use} -p all_tools`. Noted that all the files will be kept. Remerber to delete temp files to save the disk space.
 
 ## How to start on google cloud
 
