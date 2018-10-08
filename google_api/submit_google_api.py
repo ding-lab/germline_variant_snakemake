@@ -77,9 +77,11 @@ def check_status(row):
 
 
 ## Create the default table based on sys.argv[2]
+## Create a new table
 if sys.argv[1]=="1":
     RESULT_TSV = build_table(sys.argv[2])
     RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
+## Read the current table and continue the jobs
 if sys.argv[1]=="2":
     RESULT_TSV = pd.read_table(sys.argv[2])
 
