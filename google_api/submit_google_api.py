@@ -2,7 +2,7 @@
 ###
 #Aim: Check the status of VM jobs and keep launching jobs if the running vm is less than 25.
 #Author: Wen-Wei Liang @ Wash U (liang.w@wustl.edu)
-#Usuage: python submit_google_api.py {path_to_sample_manifest} 
+#Usuage: python submit_google_api.py {mode} {path_to_sample_manifest} 
 ###
 
 import os
@@ -23,7 +23,7 @@ def build_table(path_to_manifest):
     df["size"] = df["file_size"].apply(lambda x: x*2/1000000000 if x*2/1000000000 > 50 else "50") # Convert the file size from byte to GB
 
     # Get the gspath of reference files
-    df["gspath_to_ref"] = df["reference"].apply(lambda x: "gs://ding_lab_reference/Homo_sapiens_assembly19.fasta" if x=="HG19_Broad_variant" else ( "gs://ding_lab_reference/GRCh37-lite.fa" if x=="GRCh37" else ( "gs://ding_lab_reference/GRCh37-lite.fa" if x=="GRCh37-lite_WUGSC_variant_2" else "Not_Determined")))
+    df["gspath_to_ref"] = df["reference"].apply(lambda x: "gs://ding_lab_reference/Homo_sapiens_assembly19.fasta" if x=="HG19_Broad_variant" else ( "gs://ding_lab_reference/GRCh37-lite.fa" if x[:6]=="GRCh37" else "Not_Determined"))
     df["dict"] = df["gspath_to_ref"].str.split(".").str[0]+".dict"
 
     # Assign bucket
