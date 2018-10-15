@@ -23,7 +23,7 @@ def build_table(path_to_manifest):
     df["size"] = df["file_size"].apply(lambda x: x*2/1000000000 if x*2/1000000000 > 50 else "50") # Convert the file size from byte to GB
 
     # Get the gspath of reference files
-    df["gspath_to_ref"] = df["reference"].apply(lambda x: "gs://ding_lab_reference/Homo_sapiens_assembly19.fasta" if x=="HG19_Broad_variant" else ( "gs://ding_lab_reference/GRCh37-lite.fa" if x=="GRCh37" else "Not_Determined"))
+    df["gspath_to_ref"] = df["reference"].apply(lambda x: "gs://ding_lab_reference/Homo_sapiens_assembly19.fasta" if x=="HG19_Broad_variant" else ( "gs://ding_lab_reference/GRCh37-lite.fa" if x=="GRCh37" else ( "gs://ding_lab_reference/GRCh37-lite.fa" if x=="GRCh37-lite_WUGSC_variant_2" else "Not_Determined")))
     df["dict"] = df["gspath_to_ref"].str.split(".").str[0]+".dict"
 
     # Assign bucket
@@ -75,12 +75,12 @@ def check_status(row):
             print("case "+case+" : "+operation_id+" is successfully done")
             return "Done"
 
-
+filename = str(sys.argv[2])+"_result.tsv"
 ## Create the default table based on sys.argv[2]
 ## Create a new table
 if sys.argv[1]=="1":
     RESULT_TSV = build_table(sys.argv[2])
-    RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
+    RESULT_TSV.to_csv(filename, sep="\t", index=False)
 ## Read the current table and continue the jobs
 if sys.argv[1]=="2":
     RESULT_TSV = pd.read_table(sys.argv[2])
@@ -122,11 +122,11 @@ while len(UNDONE_LIST) !=0:
         CHECKING_TSV["status"] = CHECKING_TSV.apply(check_status, axis=1)
         ## Update the result table
         RESULT_TSV.update(CHECKING_TSV)
-    RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
+    RESULT_TSV.to_csv(filename, sep="\t", index=False)
     ## Generate a new undone_list based on the status 
     UNDONE_LIST = RESULT_TSV[(RESULT_TSV["status"]!="Done") & (RESULT_TSV["num_of_repeats"]<=15)]["case_full_barcode"].tolist()
     print("There are "+str(len(UNDONE_LIST))+" samples to work on.")
     ## Wait for 300 second and check the status againg
     time.sleep(60)
 else:
-    RESULT_TSV.to_csv("result.tsv", sep="\t", index=False)
+    RESULT_TSV.to_csv(filename, sep="\t", index=False)
