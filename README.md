@@ -74,7 +74,7 @@ sample=TCGA-44-4112-11A-01D-1103-02 \
 --preemptible
 ```
 
-7. Since preemptible machines usually be shut down for no reasons, it would be helpful to launch batch jobs by using script `submit_google_api.py`. Usage: python submit_google_api.py {mode} {path_to_sample_manifest}
+7. Since preemptible machines usually be shut down for no reasons, it would be helpful to launch batch jobs by using script `submit_google_api.py`. Usage: `python germline_variant_snakemake/google_api/submit_google_api.py {mode} {path_to_sample_manifest}`.
 
 ## Configure snakemake workflow based on your working enviornment (only for local_test)
 
