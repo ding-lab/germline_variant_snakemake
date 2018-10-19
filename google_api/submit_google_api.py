@@ -75,14 +75,15 @@ def check_status(row):
             print("case "+case+" : "+operation_id+" is successfully done")
             return "Done"
 
-filename = str(sys.argv[2])+"_result.tsv"
 ## Create the default table based on sys.argv[2]
 ## Create a new table
 if sys.argv[1]=="1":
+    filename = str(sys.argv[2]).split(".")[0]+".result.tsv"
     RESULT_TSV = build_table(sys.argv[2])
     RESULT_TSV.to_csv(filename, sep="\t", index=False)
 ## Read the current table and continue the jobs
 if sys.argv[1]=="2":
+    filename = str(sys.argv[2])
     RESULT_TSV = pd.read_table(sys.argv[2])
 
 ## Generate an undone_list based on the status and number of tries.
