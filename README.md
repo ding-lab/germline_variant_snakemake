@@ -74,7 +74,7 @@ sample=TCGA-44-4112-11A-01D-1103-02 \
 --preemptible
 ```
 
-7. Since preemptible machines usually be shut down for no reasons, it would be helpful to launch batch jobs by using script `submit_google_api.py`. Usage: `python germline_variant_snakemake/google_api/submit_google_api.py {mode} {path_to_sample_manifest}`. The output `{filename_of_manifest}.result.tsv` give you a snapshot of `case_full_barcode	cmd	status	operation_id	num_of_repeats`. Noted that if the job has been launched more than 16 times, the script will not lauch it again. Go check the specific job or sample and make sure there is no problems.
+7. Since preemptible machines might be shut down for no reasons, it would be helpful to launch batch jobs by using script `submit_google_api.py`. This scirpt reads manifest, launchs jobs for the first 30 samples of manifest, checks the status of lauched job evey minutes, and keeps a certain number of VMs for running. The output `{filename_of_manifest}.result.tsv` gives you a snapshot of `case_full_barcode	cmd	status	operation_id	num_of_repeats`. Noted that if a sample related job has been launched more than 16 times, the script stops lauch it again. User is suggested to go check the specific job or sample, make sure there is no problems, and relauch it manually. One sample usually can be completed withing 16 times.
 
 ## Configure snakemake workflow based on your working enviornment (only for local_test)
 
