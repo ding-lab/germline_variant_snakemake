@@ -21,6 +21,16 @@ Snakemake workflow to call germline variant by using GATK, VarScan, and Pindel. 
 
 `files`: Required files like chromosome intervals for germline variant calling tools (Check if your reads started with `chr` or not. Change the prefix of chromosome accordingly).
 
+
+## Sanity check of your BAM before snakemake run
+
+Highly recommend to run GATK locally on BAM and make sure there is no problem on running GATK HaplotypeCaller. If there is error, go check GATK blog and find out what the problem is. For example:
+
+1. Check if the chromosome starts with `chr` or not, and change the chromosome interval files accordingly. 
+
+2. Make sure if the ReadGroup is correct. If not, use `gatk AddOrReplaceReadGroups` to change accordingly.
+
+
 ## How to start on a local enviornment
 
 1. Clone the repository: `git clone https://github.com/ding-lab/germline_variant_snakemake.git`
