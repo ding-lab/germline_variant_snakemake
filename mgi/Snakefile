@@ -199,12 +199,12 @@ rule filter:
 
 rule gzip_merged:
     input: "{sample}.merged.vcf"
-    output: "{sample}.merged.vcf.gz"
+    output: temp("{sample}.merged.vcf.gz")
     shell: "bcftools view {input} -Oz -o {output}" 
 
 rule ad5_filter:
     input: "{sample}.merged.vcf.gz"
-    output: "{sample}.merged.ad5.vcf"
+    output: temp("{sample}.merged.ad5.vcf")
     shell: "python2.7 ../scripts/filter_VCF_AD.py {input} 5 > {output}"
 
 rule gzip:
@@ -214,17 +214,17 @@ rule gzip:
 
 rule pick_caller:
     input: "{sample}.merged.ad5.vcf.gz"
-    output: "{sample}.merged.ad5.single_caller.vcf"
+    output: temp("{sample}.merged.ad5.single_caller.vcf")
     shell: "python2.7 ../scripts/pick_caller.py {input} > {output}"
 
 rule gzip_pick_caller:
     input: "{sample}.merged.ad5.single_caller.vcf"
-    output: "{sample}.merged.ad5.single_caller.vcf.gz"
+    output: temp("{sample}.merged.ad5.single_caller.vcf.gz")
     shell: "bcftools view {input} -Oz -o {output}"
 
 rule index:
     input: "{sample}.merged.ad5.single_caller.vcf.gz"
-    output: "{sample}.merged.ad5.single_caller.vcf.gz.tbi"
+    output: temp("{sample}.merged.ad5.single_caller.vcf.gz.tbi")
     shell: "bcftools index -t {input}"
 
 rule merge_vcf:
@@ -238,7 +238,7 @@ rule vcf2maf:
     input:
         vcf = "{sample}.merged.ad5.vcf",
         genome_fa = lambda wildcards: REF_DICT[wildcards.sample]
-    output: "{sample}.maf"
+    output: temp("{sample}.maf")
     resources: mem = 40000
     params:
         sample="{sample}",
@@ -249,11 +249,21 @@ rule vcf2maf:
 
 rule deduplicate_maf:
     input: "{sample}.maf"
-    output: "{sample}.deduplicated.maf"
+    output: temp("{sample}.deduplicated.maf")
     log: "logs/{sample}.deduplicate.log"
     resources: mem = 32000
     shell: "python2.7 ../scripts/deduplicate_maf.py {input} > {output} 2>{log}"
 
+rule concat_maf:
+    input: expand("{sample}.deduplicated.maf", sample=SAMPLE)
+    output: "gdan_luad_driverless.ad5.maf"
+    shell: "cat {input} | egrep '^#|^Hugo' > temp.maf ; cat {input} | egrep -v '^#|^Hugo' >> temp.maf; mv temp.maf {output}"
+
+rule gzip_maf:
+    input: "gdan_luad_driverless.ad5.maf"
+    output: "gdan_luad_driverless.ad5.maf.gz"
+    shell: "bgzip -c {input} > {output}"
+
 rule all_tools:
-    input: expand("{sample}.deduplicated.maf", sample=SAMPLE), "LUAD.driverless99.germline.ad5.vcf.gz"
+    input: "gdan_luad_driverless.ad5.maf.gz", "LUAD.driverless99.germline.ad5.vcf.gz"
 
