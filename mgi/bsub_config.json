@@ -1,0 +1,6 @@
+{
+    "__default__": {
+        "queue": "research-hpc",
+        "docker_image": "wenwiliang/germline_variant_snakemake"
+    }
+}

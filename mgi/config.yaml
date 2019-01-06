@@ -1,0 +1,4 @@
+samples: sample.txt
+interval_prefix: "/gscmnt/gc3024/dinglab/medseq/Noncoding_eQTL/LUAD_driverless/germline_variant_snakemake/files"
+path_to_pindel2vcf: "/gscmnt/gc3024/dinglab/medseq/Noncoding_eQTL/tool/miniconda3/envs/snakemake/bin/pindel2vcf"
+path_to_gatk_jar: "/gscmnt/gc3024/dinglab/medseq/Noncoding_eQTL/tool/miniconda3/envs/gatk38/opt/gatk-3.8/GenomeAnalysisTK.jar"

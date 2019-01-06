@@ -1,0 +1,259 @@
+# Call germline variant
+
+import os
+import pandas as pd
+from pathlib import Path
+
+configfile: "config.yaml"
+
+
+INTERVALPREFIX = config["interval_prefix"]+"/interval_chr"
+CHR=[str(i) for i in range (1,23)]
+CHR.append("X")
+CHR.append("Y")
+
+### Get BAM path and sample id from config file
+
+SAMPLE = pd.read_table(config["samples"])["sample"].drop_duplicates().tolist()
+REF_DICT = pd.read_table(config["samples"])[["sample","reference"]].drop_duplicates().set_index("sample")["reference"].to_dict()
+FILE_DICT = pd.read_table(config["samples"])[["sample","bampath"]].drop_duplicates().set_index("sample")["bampath"].to_dict()
+
+### Run GATK HaplotypeCaller and Select Variant
+rule gatk_haplotypecaller:
+    input: 
+        genome_fa = lambda wildcards: REF_DICT[wildcards.sample],
+        bam = lambda wildcards: FILE_DICT[wildcards.sample],
+        interval = f"{INTERVALPREFIX}{{ix}}.list"
+    output: temp("{sample}.gatk.raw.chr{ix}.vcf")
+    resources: 
+        mem = 200000,
+        threads = 4 
+    log: "logs/{sample}.gatk.haplotypecaller.chr{ix}.log"
+    shell: "gatk HaplotypeCaller -R {input.genome_fa} -I {input.bam} -L {input.interval} -O {output} --standard-min-confidence-threshold-for-calling 30.0 2>{log}"
+
+rule gatk_selectvariant_snp:
+    input:
+        genome_fa = lambda wildcards: REF_DICT[wildcards.sample],
+        input_vcf = "{sample}.gatk.raw.chr{ix}.vcf"
+    output: temp("{sample}.gatk.snp.chr{ix}.vcf")
+    resources: 
+        mem = 200000,    
+        threads = 4
+    log: "logs/{sample}.gatk.selectsnp.chr{ix}.log"
+    shell: "gatk SelectVariants -R {input.genome_fa} -V {input.input_vcf} -O {output} -select-type SNP -select-type MNP 2>{log}"
+
+rule gatk_selectvariant_indel:
+    input:
+        genome_fa = lambda wildcards: REF_DICT[wildcards.sample],
+        input_vcf = "{sample}.gatk.raw.chr{ix}.vcf"
+    output: temp("{sample}.gatk.indel.chr{ix}.vcf")
+    resources:
+        mem = 200000,
+        threads = 4
+    log: "logs/{sample}.gatk.selectindel.chr{ix}.log"
+    shell: "gatk SelectVariants -R {input.genome_fa} -V {input.input_vcf} -O {output} -select-type INDEL 2>{log}"
+
+rule gatk_merge_snp_vcf:
+    input: calls= expand('{{sample}}.gatk.snp.chr{ix}.vcf', ix=CHR)
+    output: temp("{sample}.gatk.snp.vcf")
+    shell: "bcftools concat -o {output} {input}"
+
+rule gatk_merge_indel_vcf:
+    input: calls= expand('{{sample}}.gatk.indel.chr{ix}.vcf', ix=CHR)
+    output: temp("{sample}.gatk.indel.vcf")
+    shell: "bcftools concat -o {output} {input}"
+
+###Run Varscan
+rule varscan_mpileup2snp:
+    input:
+         genome_fa = lambda wildcards: REF_DICT[wildcards.sample],
+         bam = lambda wildcards: FILE_DICT[wildcards.sample]
+    output: temp("{sample}.varscan.snp.chr{ix}.vcf")
+    params: chr="{ix}"
+    resources:
+        mem = 30000,
+        threads = 2
+    log: "logs/{sample}.varscan.snp.chr{ix}.log"
+    shell: "samtools mpileup -q 1 -Q 13 -f {input.genome_fa} -r {params.chr} {input.bam} | varscan mpileup2snp - --min-coverage 3 --min-var-freq 0.10 --p-value 0.10 --strand-filter 1 --output-vcf 1 > {output} 2>{log}"
+
+rule varscan_mpileup2indel:
+    input:
+         genome_fa = lambda wildcards: REF_DICT[wildcards.sample],
+         bam = lambda wildcards: FILE_DICT[wildcards.sample]
+    output: temp("{sample}.varscan.indel.chr{ix}.vcf")
+    params: chr="{ix}"
+    resources:
+        mem = 30000,
+        threads = 2
+    log: "logs/{sample}.varscan.snp.chr{ix}.log"
+    shell: "samtools mpileup -q 1 -Q 13 -f {input.genome_fa} -r {params.chr} {input.bam} | varscan mpileup2indel - --min-coverage 3 --min-var-freq 0.10 --p-value 0.10 --strand-filter 1 --output-vcf 1 > {output} 2>{log}"
+
+rule varscan_snp_index:
+    input: "{sample}.varscan.snp.chr{ix}.vcf"
+    output: temp("{sample}.varscan.snp.chr{ix}.vcf.gz")
+    shell: "bcftools view {input} -Oz -o {output}; bcftools index {output}"
+
+rule varscan_indel_index:
+    input: "{sample}.varscan.indel.chr{ix}.vcf"
+    output: temp("{sample}.varscan.indel.chr{ix}.vcf.gz")
+    shell: "bcftools view {input} -Oz -o {output}; bcftools index {output}"
+
+rule varscan_merge_snp_vcf:
+    input: calls= expand('{{sample}}.varscan.snp.chr{ix}.vcf.gz', ix=CHR)
+    output: temp("{sample}.varscan.snp.vcf")
+    shell: "bcftools concat -o {output} {input}"
+
+rule varscan_merge_indel_vcf:
+    input: calls= expand('{{sample}}.varscan.indel.chr{ix}.vcf.gz', ix=CHR)
+    output: temp("{sample}.varscan.indel.vcf")
+    shell: "bcftools concat -o {output} {input}"
+
+###Run Pindel
+rule pindel_call:
+    input:
+        ref = lambda wildcards: REF_DICT[wildcards.sample],
+        samples = lambda wildcards: FILE_DICT[wildcards.sample]
+    output: temp("pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw")
+    params:
+        prefix="pindel/chr{ix}/{sample}.chr{ix}",
+        extra="-x 4 -w 0.1 -B 0 -M 3 -J ../files/pindel-centromere-exclude.bed -c {ix}",
+        chr="{ix}",
+        sample="{sample}",
+        bam = lambda wildcards: str(FILE_DICT[wildcards.sample])
+    log: "logs/{sample}.pindel.chr{ix}.log"
+    resources:
+        mem = 30000,
+        threads = 6
+    shell: "echo -e ""{params.bam}\t500\t{params.sample}"" > pindel/chr{params.chr}/{params.sample}.pindel_config.txt; pindel {params.extra} -T {threads} -f {input.ref} -i pindel/chr{params.chr}/{params.sample}.pindel_config.txt -o {params.prefix} -L {log}; cat {params.prefix}_D {params.prefix}_INV {params.prefix}_TD {params.prefix}_SI | grep ChrID > {output}"
+
+#Generate the config file for pindel_filter.v0.5.pl
+
+rule pindel_filter_config:
+    input: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw"
+    output: temp("pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt")
+    params: 
+        sample="{sample}",
+        chr="{ix}",
+        ref_file = lambda wildcards: str(REF_DICT[wildcards.sample]),
+        path2pindel2vcf = config["path_to_pindel2vcf"]
+    run:
+        for ix in CHR:
+            filename=f"pindel/chr{params.chr}/{params.sample}.pindel.input.chr{params.chr}.txt"
+            with open(filename, "w") as f:
+                f.write ( \
+f"pindel.filter.pindel2vcf = {params.path2pindel2vcf}\n\
+pindel.filter.variants_file = pindel/chr{params.chr}/{params.sample}.pindel.out.chr{params.chr}.raw\n\
+pindel.filter.REF = {params.ref_file}\n\
+pindel.filter.date = 000000\n\
+pindel.filter.heterozyg_min_var_allele_freq = 0.2\n\
+pindel.filter.homozyg_min_var_allele_freq = 0.8\n\
+pindel.filter.mode = germline\n\
+pindel.filter.apply_filter = true\n\
+pindel.filter.germline.min_coverages = 10\n\
+pindel.filter.germline.min_var_allele_freq = 0.20\n\
+pindel.filter.germline.require_balanced_reads = 'true'\n\
+pindel.filter.germline.remove_complex_indels = 'true'\n\
+pindel.filter.germline.max_num_homopolymer_repeat_units = 6")
+
+rule filter_pindel:
+    input: 
+        config_file="pindel/chr{ix}/{sample}.pindel.input.chr{ix}.txt", 
+        raw="pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw"
+    output: temp("pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf")
+    params: chr='{ix}',
+            sample='{sample}'
+    resources:
+        mem = 30000
+    shell: "perl ../scripts/pindel_filter.v0.5.pl {input.config_file}"
+
+rule index_pindel:
+    input: "pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf"
+    output: temp("pindel/chr{ix}/{sample}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf.gz")
+    shell: 'bcftools view {input} -Oz -o {output}; bcftools index {output}'
+
+rule pindel_merge_vcf:
+    input: calls=expand("pindel/chr{ix}/{{sample}}.pindel.out.chr{ix}.raw.CvgVafStrand_pass.Homopolymer_pass.vcf.gz", ix=CHR)
+    output: temp("{sample}.pindel.vcf")
+    shell: "bcftools concat -o {output} {input}"
+
+rule merge:
+    input: 
+        gsnp = "{sample}.gatk.snp.filtered.vcf",
+        gindel = "{sample}.gatk.indel.filtered.vcf",
+        vsnp = "{sample}.varscan.snp.filtered.vcf",
+        vindel = "{sample}.varscan.indel.filtered.vcf",
+        pindel = "{sample}.pindel.vcf",
+        ref = lambda wildcards: REF_DICT[wildcards.sample],
+        jar = config["path_to_gatk_jar"] 
+    conda: "../env/gatk38.yml"
+    output: temp("{sample}.merged.vcf")
+    resources: mem = 80000
+    log: "logs/{sample}.final_merge.log"
+    shell: "java -jar {input.jar} -T CombineVariants -R {input.ref} -o {output} --variant:gsnp {input.gsnp} --variant:gindel {input.gindel} --variant:vsnp {input.vsnp} --variant:vindel {input.vindel} --variant:pindel {input.pindel} -genotypeMergeOptions PRIORITIZE -priority gsnp,vsnp,gindel,vindel,pindel 2>{log}"
+
+rule filter:
+    input: "{sample}.gatk.snp.vcf", "{sample}.gatk.indel.vcf", "{sample}.varscan.snp.vcf", "{sample}.varscan.indel.vcf", "{sample}.pindel.vcf"
+    output: temp("{sample}.gatk.snp.filtered.vcf"), temp("{sample}.gatk.indel.filtered.vcf"), temp("{sample}.varscan.snp.filtered.vcf"), temp("{sample}.varscan.indel.filtered.vcf")
+    params: sample = '{sample}'
+    shell: "perl ../scripts/filter_gatk_varscan.pl `pwd -P` {params.sample}; rm -rf {params.sample}*.chr* logs/{params.sample}* pindel/chr*/{params.sample}* {params.sample}*.indel.vcf {params.sample}*.snp.vcf"
+
+rule gzip_merged:
+    input: "{sample}.merged.vcf"
+    output: "{sample}.merged.vcf.gz"
+    shell: "bcftools view {input} -Oz -o {output}" 
+
+rule ad5_filter:
+    input: "{sample}.merged.vcf.gz"
+    output: "{sample}.merged.ad5.vcf"
+    shell: "python2.7 ../scripts/filter_VCF_AD.py {input} 5 > {output}"
+
+rule gzip:
+    input: "{sample}.merged.ad5.vcf"
+    output: "{sample}.merged.ad5.vcf.gz"
+    shell: "bcftools view {input} -Oz -o {output}"
+
+rule pick_caller:
+    input: "{sample}.merged.ad5.vcf.gz"
+    output: "{sample}.merged.ad5.single_caller.vcf"
+    shell: "python2.7 ../scripts/pick_caller.py {input} > {output}"
+
+rule gzip_pick_caller:
+    input: "{sample}.merged.ad5.single_caller.vcf"
+    output: "{sample}.merged.ad5.single_caller.vcf.gz"
+    shell: "bcftools view {input} -Oz -o {output}"
+
+rule index:
+    input: "{sample}.merged.ad5.single_caller.vcf.gz"
+    output: "{sample}.merged.ad5.single_caller.vcf.gz.tbi"
+    shell: "bcftools index -t {input}"
+
+rule merge_vcf:
+    input:
+        vcf = expand('{sample}.merged.ad5.single_caller.vcf.gz', sample=SAMPLE),
+        idx = expand('{sample}.merged.ad5.single_caller.vcf.gz.tbi', sample=SAMPLE)
+    output: "LUAD.driverless99.germline.ad5.vcf.gz"
+    shell: "bcftools merge {input.vcf} -Oz -o {output}"
+
+rule vcf2maf:
+    input:
+        vcf = "{sample}.merged.ad5.vcf",
+        genome_fa = lambda wildcards: REF_DICT[wildcards.sample]
+    output: "{sample}.maf"
+    resources: mem = 40000
+    params:
+        sample="{sample}",
+        vep_path="/gscmnt/gc3024/dinglab/medseq/Noncoding_eQTL/tool/miniconda3/envs/snakemake/bin",
+        filter_vcf="/gscmnt/gc2741/ding/qgao/tools/vcf2maf-1.6.11/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz"
+    log: "logs/{sample}.vcf2maf.log"
+    shell: "vcf2maf.pl --input-vcf {input.vcf} -output-maf {output} --tumor-id {params.sample} --ref-fasta {input.genome_fa} --filter-vcf {params.filter_vcf} --vep-path {params.vep_path} 2>{log}"
+
+rule deduplicate_maf:
+    input: "{sample}.maf"
+    output: "{sample}.deduplicated.maf"
+    log: "logs/{sample}.deduplicate.log"
+    resources: mem = 32000
+    shell: "python2.7 ../scripts/deduplicate_maf.py {input} > {output} 2>{log}"
+
+rule all_tools:
+    input: expand("{sample}.deduplicated.maf", sample=SAMPLE), "LUAD.driverless99.germline.ad5.vcf.gz"
+

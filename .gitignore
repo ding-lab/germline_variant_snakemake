@@ -1,0 +1,5 @@
+mgi/*vcf*
+mgi/pindel/
+mgi/lsf_logs/
+mgi/logs/
+mgi/.snakemake/
