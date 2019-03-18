@@ -68,7 +68,7 @@ conda config --add channels conda-forge
 
 8. Make a folder for LSF logs: `mkdir lsf_logs`
 
-9. Check if `/bin/bash` works. If it is masked by other bash path such as `/gsc/bin/bash`, follow the [confluence page here](https://confluence.ris.wustl.edu/display/DL/How+to+run+Docker+on+MGI)
+9. Check if `/bin/bash` works. If it is masked by other bash path such as `/gsc/bin/bash`, follow the [confluence page here](https://confluence.ris.wustl.edu/display/DL/How+to+run+Docker+on+MGI). Or, setting `LSF_DOCKER_PRESERVE_ENVIRONMENT=true` will work.
 
 10. Run a task: `bash run.sh`
 
